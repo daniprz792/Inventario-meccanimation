@@ -20,5 +20,20 @@ public class ItemRoutes {
             dao.guardarItem(item);
             ctx.status(201);
         });
+
+        // Actualiza un item existente
+            app.put("/api/items/{id}", ctx -> {
+                Item item = ctx.bodyAsClass(Item.class);
+                item.setId(Integer.parseInt(ctx.pathParam("id")));
+                dao.actualizarItem(item);
+                ctx.status(204);
+            });
+
+            // Elimina un item
+            app.delete("/api/items/{id}", ctx -> {
+                int id = Integer.parseInt(ctx.pathParam("id"));
+                dao.eliminarItem(id);
+                ctx.status(204);
+            });
     }
 }

@@ -1,0 +1,5 @@
+inventario\model\Item.class
+inventario\dao\ItemDAO.class
+inventario\App.class
+inventario\routes\ItemRoutes.class
+inventario\config\ConexionDB.class
