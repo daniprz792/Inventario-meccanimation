@@ -1,5 +1,4 @@
 package inventario;
-
 //import inventario.dao.ItemDAO;
 //import inventario.model.Item;
 import io.javalin.Javalin;
@@ -8,7 +7,6 @@ import inventario.routes.ItemRoutes;
 // entrada de la app de inventario  //
 
 public class App {
-
     public static void main(String[] args) {
 
         Javalin app = Javalin.create(config -> {
@@ -19,7 +17,10 @@ public class App {
 
     }
 
+
 }
+
+                        // estas son las pruebas que hice desde la console :P
 
         // acceso de los datos de java a mysql 
 

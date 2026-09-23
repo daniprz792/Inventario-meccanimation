@@ -12,14 +12,18 @@ import inventario.model.Item;
 
 public class ItemDAO {
 
+
+// create del crud 
     public void guardarItem(Item item) {
-       
+       // SQL para insertar un nuevo item en la base de datos
     String sql = """
         INSERT INTO items
         (codigo_inventario, producto, nombre, descripcion, precio_unitario,
          cantidad_existencias, valor_inventario, fecha_ingreso, observaciones, descontinuado)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
+
+        // items que usamos para guardar en la base de datos, abrimos la conexion 
     try {
         Connection conexion = ConexionDB.conectar();
         PreparedStatement stmt = conexion.prepareStatement(sql);
@@ -40,7 +44,7 @@ public class ItemDAO {
         System.out.println(e.getMessage());
     }
 }
-
+    // Actualiza un item existente en la base de datos
     public void actualizarItem(Item item) {
     String sql = """
         UPDATE items
@@ -49,6 +53,8 @@ public class ItemDAO {
             fecha_ingreso = ?, observaciones = ?
         WHERE id = ?
         """;
+
+        // items que usamos para actualizar en la base de datos
     try {
         Connection conexion = ConexionDB.conectar();
         PreparedStatement stmt = conexion.prepareStatement(sql);
@@ -71,12 +77,14 @@ public class ItemDAO {
 }
 
     public List<Item> listarItems() {
+
+        // Devuelve una lista de todos los items en la base de datos
         List<Item> lista = new ArrayList<>();
         try {
             Connection conexion = ConexionDB.conectar();
             Statement stmt = conexion.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM items");
-
+// items que usamos para listar en la base de datos
             while (rs.next()) {
                 Item item = new Item();
                 item.setId(rs.getInt("id"));

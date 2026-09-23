@@ -48,21 +48,17 @@ h2 {
  margin-top: 0;
 }
 
-/* Sección formulario */
+/* Seccion del formulario */
 .seccion-formulario {
- max-width: 1200px;
- margin: 0 auto;
+ margin: 0 2rem;
 }
 .seccion-formulario form {
- background: var(--azul-claro);
- border-radius: 1rem;
  padding: 2.5rem 2rem;
  display: flex;
  flex-wrap: wrap;
  gap: 1.5rem;
  align-items: flex-end;
  justify-content: center;
- box-shadow: 0 4px 12px var(--azul-transparente);
 }
 .campo {
  display: flex;
@@ -70,6 +66,7 @@ h2 {
  text-align: left;
 }
 .campo label {
+
  font-size: 1.3rem;
  color: var(--gris);
  margin-bottom: 0.4rem;
@@ -79,7 +76,6 @@ h2 {
  font-family: var(--fuente-principal);
  font-size: 1.4rem;
  padding: 0.8rem 1rem;
- border-radius: 0.5rem;
  border: 1px solid var(--azul-oscuro);
  background: var(--blanco);
  color: var(--negro);
@@ -93,7 +89,7 @@ h2 {
  font-size: 1.4rem;
  font-weight: bold;
  padding: 0.9rem 1.8rem;
- border-radius: 0.5rem;
+ /*border-radius: 2rem;*/
  border: none;
  cursor: pointer;
  background: var(--naranja);
@@ -106,21 +102,20 @@ h2 {
 
 /* Sección tabla */
 .seccion-tabla {
- max-width: 1200px;
- margin: 2rem auto 0;
+ margin: 0 0 0;
+
 }
 .tabla-inventario {
     width: 100%;
     border-collapse: collapse;
     background: var(--azul-claro);
-    border-radius: 0.8rem;
+    border-radius: 2rem;
     overflow: hidden;
 }
 .tabla-inventario th,
 .tabla-inventario td {
     padding: 1.2rem 1.5rem;
-    text-align: left;
-    border-bottom: 1px solid var(--azul-transparente);
+    text-align: left
 }
 .tabla-inventario th {
     background-color: var(--naranja);
@@ -140,12 +135,12 @@ h2 {
 .btn-eliminar {
  font-size: 1.2rem;
  padding: 0.6rem 1.2rem;
- margin-right: 0.5rem;
  border: none;
- border-radius: 0.5rem;
+ border-radius: 2rem;
  cursor: pointer;
  transition: background 0.2s ease;
 }
+/* boton de editar */
 .btn-editar {
  background: var(--naranja);
  color: var(--blanco);
@@ -153,10 +148,64 @@ h2 {
 .btn-editar:hover {
  background: var(--naranja-hover);
 }
+
+/* boton de eliminar */
 .btn-eliminar {
  background: var(--rojo);
  color: var(--blanco);
 }
 .btn-eliminar:hover {
- background: var(--rojo-hover);
+ background: var(--rojo-hover)
+}
+
+/* Modal de detalle */
+.modal {
+ position: fixed;
+ top: 0; left: 0;
+ width: 100%; height: 100%;
+ background: rgba(0,0,0,0.6);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ z-index: 100;
+}
+.modal.oculto {
+ display: none;
+}
+.modal-contenido {
+ background: var(--azul-claro);
+ border-radius: 1rem;
+ padding: 2.5rem;
+ max-width: 500px;
+ width: 90%;
+ text-align: left;
+ position: relative;
+}
+.modal-contenido h3 {
+ color: var(--naranja);
+ margin-top: 0;
+}
+.modal-contenido img {
+ max-height: 200px;
+ margin: 1rem auto;
+ border-radius: 0.5rem;
+}
+.modal-cerrar {
+ position: absolute;
+ top: 1rem; right: 1.5rem;
+ background: transparent;
+ color: var(--blanco);
+ font-size: 2.4rem;
+ border: none;
+ cursor: pointer;
+ padding: 0;
+}
+.btn-detalle {
+ background: var(--azul-transparente);
+ color: var(--blanco);
+ border: 1px solid var(--gris);
+}
+.btn-detalle:hover {
+ background: var(--gris);
+ color: var(--negro);
 }

@@ -15,6 +15,7 @@ async function cargarItems() {
             <td>${item.cantidadExistencias}</td>
             <td>$${item.valorInventario.toLocaleString()}</td>
             <td>
+                <button class="btn-detalle" onclick='verDetalle(${JSON.stringify(item)})'>Detalle</button>
                 <button class="btn-editar" onclick="editarItem(${item.id}, '${item.codigoInventario}', '${item.producto}', '${item.nombre}', '${item.descripcion ?? ''}', ${item.precioUnitario}, ${item.cantidadExistencias}, '${item.fechaIngreso ?? ''}', '${item.observaciones ?? ''}')">Editar</button>
                 <button class="btn-eliminar" onclick="eliminarItem(${item.id})">Eliminar</button>
             </td>
@@ -39,6 +40,27 @@ async function eliminarItem(id) {
     if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
     await fetch(`/api/items/${id}`, { method: 'DELETE' });
     cargarItems();
+}
+
+function verDetalle(item) {
+    document.getElementById('detalle-nombre').textContent = item.nombre;
+    document.getElementById('detalle-descripcion').textContent = item.descripcion || 'Sin descripción';
+    document.getElementById('detalle-observaciones').textContent = item.observaciones || 'Sin observaciones';
+    document.getElementById('detalle-fecha').textContent = item.fechaIngreso || 'No registrada';
+
+    const img = document.getElementById('detalle-imagen');
+    if (item.imagenProducto) {
+        img.src = '/images/' + item.imagenProducto;
+        img.style.display = 'block';
+    } else {
+        img.style.display = 'none';
+    }
+
+    document.getElementById('modal-detalle').classList.remove('oculto');
+}
+
+function cerrarDetalle() {
+    document.getElementById('modal-detalle').classList.add('oculto');
 }
 
 document.getElementById('form-item').addEventListener('submit', async (e) => {

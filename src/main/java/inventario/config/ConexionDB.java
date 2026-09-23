@@ -14,7 +14,7 @@ public class ConexionDB {
     private static final String USUARIO = "root";
     private static final String PASSWORD = "";
 
-    /** Abre y devuelve una conexion nueva con la base de datos del inventario. */
+    /** abre y devuelve una conexion nueva con la base de datos del inventario. */
     public static Connection conectar() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, PASSWORD);
     }
