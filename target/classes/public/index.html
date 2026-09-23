@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Meccanimation</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/normalize.css">
+</head>
+
+<body>
+
+    <h1>Inventario Meccanimation</h1>
+
+    <p>Sistema de gestión de inventario.</p>
+
+    <h2>Agregar Producto</h2>
+
+    <form>
+
+        <label>Código:</label>
+        <input type="text">
+
+        <label>Producto:</label>
+        <input type="text">
+
+        <label>Nombre:</label>
+        <input type="text">
+
+        <button type="submit">Guardar</button>
+
+    </form>
+
+    <h2>Inventario</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Producto</th>
+                <th>Nombre</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-items">
+        </tbody>
+    </table>
+
+    <script>
+    async function cargarItems() {
+        const respuesta = await fetch('/api/items');
+        const items = await respuesta.json();
+
+        const tbody = document.getElementById('tabla-items');
+        tbody.innerHTML = '';
+
+        items.forEach(item => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${item.codigoInventario}</td>
+                <td>${item.producto}</td>
+                <td>${item.nombre}</td>
+            `;
+            tbody.appendChild(fila);
+        });
+    }
+
+    cargarItems();
+    </script>
+
+</body>
+
+    </table>
+
+</body>
+
+</html>
+
+
