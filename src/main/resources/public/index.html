@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario Meccanimation</title>
 
-    <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/style.css"> 
     <link rel="stylesheet" href="css/normalize.css">
 </head>
 
@@ -38,18 +38,18 @@
             </div>
 
             <div class="campo">
-                <label>Descripción:</label>
+                <label>Descripcion:</label>
                 <input type="text" id="descripcion">
             </div>
 
             <div class="campo">
                 <label>Precio unitario:</label>
-                <input type="number" id="precioUnitario" step="0.01" required>
+                <input type="number" min="0" id="precioUnitario" step="0.01" required>
             </div>
 
             <div class="campo">
                 <label>Cantidad:</label>
-                <input type="number" id="cantidadExistencias" required>
+                <input type="number" min="1" id="cantidadExistencias" required>
             </div>
 
             <div class="campo">
@@ -95,7 +95,7 @@
             <button class="modal-cerrar" onclick="cerrarDetalle()">&times;</button>
             <h3 id="detalle-nombre"></h3>
             <img id="detalle-imagen" src="" alt="Imagen del producto">
-            <p><strong>Descripción:</strong> <span id="detalle-descripcion"></span></p>
+            <p><strong>Descripcion:</strong> <span id="detalle-descripcion"></span></p>
             <p><strong>Observaciones:</strong> <span id="detalle-observaciones"></span></p>
             <p><strong>Fecha ingreso:</strong> <span id="detalle-fecha"></span></p>
         </div>

@@ -54,7 +54,7 @@ public class ItemDAO {
         WHERE id = ?
         """;
 
-        // items que usamos para actualizar en la base de datos
+        // items que usamos para actualizar en la base de datos del sistema
     try {
         Connection conexion = ConexionDB.conectar();
         PreparedStatement stmt = conexion.prepareStatement(sql);
@@ -84,7 +84,9 @@ public class ItemDAO {
             Connection conexion = ConexionDB.conectar();
             Statement stmt = conexion.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM items");
-// items que usamos para listar en la base de datos
+
+    // items que usamos para listar en la base de datos
+
             while (rs.next()) {
                 Item item = new Item();
                 item.setId(rs.getInt("id"));
@@ -107,6 +109,7 @@ public class ItemDAO {
         return lista;
     }
 
+    // eliminar algun elemento de la base de datos 
     public void eliminarItem(int id) {
         String sql = """
             DELETE FROM items
@@ -124,3 +127,6 @@ public class ItemDAO {
         }
     }
 }
+
+
+

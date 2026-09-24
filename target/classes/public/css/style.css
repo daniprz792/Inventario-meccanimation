@@ -43,10 +43,6 @@ h2 {
  padding-top: 3rem;
  margin-bottom: 0.5rem;
 }
-.cabecera p {
- color: var(--gris);
- margin-top: 0;
-}
 
 /* Seccion del formulario */
 .seccion-formulario {
@@ -66,9 +62,7 @@ h2 {
  text-align: left;
 }
 .campo label {
-
  font-size: 1.3rem;
- color: var(--gris);
  margin-bottom: 0.4rem;
  font-weight: bold;
 }
@@ -76,34 +70,28 @@ h2 {
  font-family: var(--fuente-principal);
  font-size: 1.4rem;
  padding: 0.8rem 1rem;
- border: 1px solid var(--azul-oscuro);
  background: var(--blanco);
  color: var(--negro);
  min-width: 14rem;
 }
-.campo input:focus {
- outline: 2px solid var(--naranja);
-}
+
 .btn-guardar {
  font-family: var(--fuente-principal);
  font-size: 1.4rem;
  font-weight: bold;
  padding: 0.9rem 1.8rem;
- /*border-radius: 2rem;*/
  border: none;
  cursor: pointer;
  background: var(--naranja);
  color: var(--blanco);
- transition: background 0.2s ease;
 }
 .btn-guardar:hover {
  background: var(--naranja-hover);
 }
 
-/* Sección tabla */
+/* seccion tabla */
 .seccion-tabla {
  margin: 0 0 0;
-
 }
 .tabla-inventario {
     width: 100%;
@@ -130,7 +118,7 @@ h2 {
  border-bottom: none;
 }
 
-/* Botones de acciones */
+/* botones de acciones */
 .btn-editar,
 .btn-eliminar {
  font-size: 1.2rem;
@@ -148,7 +136,6 @@ h2 {
 .btn-editar:hover {
  background: var(--naranja-hover);
 }
-
 /* boton de eliminar */
 .btn-eliminar {
  background: var(--rojo);
@@ -157,7 +144,6 @@ h2 {
 .btn-eliminar:hover {
  background: var(--rojo-hover)
 }
-
 /* Modal de detalle */
 .modal {
  position: fixed;

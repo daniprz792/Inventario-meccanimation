@@ -1,10 +1,14 @@
+// conecta el html con la api de java 
+
+
+// funcion para cargar los items del inventario en la tabla
 async function cargarItems() {
     const respuesta = await fetch('/api/items');
     const items = await respuesta.json();
 
     const tbody = document.getElementById('tabla-items');
     tbody.innerHTML = '';
-
+// recorre cada item y crea una fila en la tabla con los datos del item
     items.forEach(item => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
@@ -24,6 +28,7 @@ async function cargarItems() {
     });
 }
 
+// funcion para editar un item del inventario, llena el formulario con los datos del item seleccionado
 function editarItem(id, codigo, producto, nombre, descripcion, precio, cantidad, fecha, observaciones) {
     document.getElementById('itemId').value = id;
     document.getElementById('codigoInventario').value = codigo;
@@ -36,12 +41,14 @@ function editarItem(id, codigo, producto, nombre, descripcion, precio, cantidad,
     document.getElementById('observaciones').value = observaciones;
 }
 
+// funcion para eliminar un item del inventario, pide confirmacion en el navegador antes de eliminar
 async function eliminarItem(id) {
     if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
     await fetch(`/api/items/${id}`, { method: 'DELETE' });
     cargarItems();
 }
 
+// funcion para ver el detalle de un item del inventario, muestra un modal con los datos del item seleccionado
 function verDetalle(item) {
     document.getElementById('detalle-nombre').textContent = item.nombre;
     document.getElementById('detalle-descripcion').textContent = item.descripcion || 'Sin descripción';
@@ -59,15 +66,19 @@ function verDetalle(item) {
     document.getElementById('modal-detalle').classList.remove('oculto');
 }
 
+// funcion para cerrar el modal de detalle
+
 function cerrarDetalle() {
     document.getElementById('modal-detalle').classList.add('oculto');
 }
 
+// evento para enviar el formulario de agregar o editar un item del inventario, si el id del item es nulo se agrega un nuevo item, si no se edita el item existente
 document.getElementById('form-item').addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // obtiene el id del item del formulario, si es nulo se agrega un nuevo item, si no se edita el item existente
     const id = document.getElementById('itemId').value;
-
+// crea un objeto con los datos del item del formulario
     const item = {
         codigoInventario: document.getElementById('codigoInventario').value,
         producto: document.getElementById('producto').value,
@@ -80,6 +91,7 @@ document.getElementById('form-item').addEventListener('submit', async (e) => {
         descontinuado: false
     };
 
+    // si el id del item es nulo se agrega un nuevo item, si no se edita el item existente
     if (id) {
         await fetch(`/api/items/${id}`, {
             method: 'PUT',
@@ -94,6 +106,7 @@ document.getElementById('form-item').addEventListener('submit', async (e) => {
         });
     }
 
+        // limpia el formulario y recarga la tabla de items
     document.getElementById('form-item').reset();
     document.getElementById('itemId').value = '';
     cargarItems();

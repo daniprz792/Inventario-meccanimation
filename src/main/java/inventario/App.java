@@ -6,6 +6,8 @@ import inventario.routes.ItemRoutes;
 
 // entrada de la app de inventario  //
 
+
+// esta clase es la clase principal de la aplicacion, que inicia el servidor y registra las rutas de la api
 public class App {
     public static void main(String[] args) {
 
@@ -16,11 +18,8 @@ public class App {
         ItemRoutes.registrar(app);
 
     }
-
-
 }
-
-                        // estas son las pruebas que hice desde la console :P
+                        // estas son las pruebas que hice desde la consolola 
 
         // acceso de los datos de java a mysql 
 

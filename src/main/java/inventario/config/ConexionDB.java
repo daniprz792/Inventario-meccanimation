@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-//  los datos necesarios para conectarse mysql//
+//  datos para conectarse mysql //
 
 public class ConexionDB {
 
@@ -14,7 +14,7 @@ public class ConexionDB {
     private static final String USUARIO = "root";
     private static final String PASSWORD = "";
 
-    /** abre y devuelve una conexion nueva con la base de datos del inventario. */
+    // abre y devuelve una conexion nueva con la base de datos del inventario  //
     public static Connection conectar() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, PASSWORD);
     }
