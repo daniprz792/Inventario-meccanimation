@@ -28,7 +28,6 @@ public class App {
        // Item item = new Item();
 
         //ItemDAO dao = new ItemDAO();
-
         //dao.eliminarItem(4);
 
 
