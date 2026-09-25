@@ -45,15 +45,17 @@ public class ItemRoutes {
     private static Item construirItemDesdeFormulario(Context ctx, ItemDAO dao, Integer idExistente) {
         Item item = new Item();
         item.setCodigoInventario(ctx.formParam("codigoInventario"));
-        item.setProducto(ctx.formParam("producto"));
+        item.setIdCategoria(Integer.parseInt(ctx.formParam("idCategoria")));
         item.setNombre(ctx.formParam("nombre"));
+        item.setMarca(ctx.formParam("marca"));
+        item.setModelo(ctx.formParam("modelo"));
         item.setDescripcion(ctx.formParam("descripcion"));
         item.setPrecioUnitario(Double.parseDouble(ctx.formParam("precioUnitario")));
         item.setCantidadExistencias(Integer.parseInt(ctx.formParam("cantidadExistencias")));
-        item.setFechaIngreso(ctx.formParam("fechaIngreso"));
-        item.setObservaciones(ctx.formParam("observaciones"));
-        item.setDescontinuado(Boolean.parseBoolean(ctx.formParam("descontinuado")));
-
+        item.setFechaCompra(ctx.formParam("fechaCompra"));
+        item.setNotas(ctx.formParam("notas"));
+        
+        
         UploadedFile archivo = ctx.uploadedFile("imagen");
 
         if (archivo != null) {
@@ -62,15 +64,15 @@ public class ItemRoutes {
                 Path destino = Paths.get("uploads/images", nombreArchivo);
                 Files.createDirectories(destino.getParent());
                 Files.copy(archivo.content(), destino, StandardCopyOption.REPLACE_EXISTING);
-                item.setImagenProducto(nombreArchivo);
+                item.setFoto(nombreArchivo);
             } catch (IOException e) {
                 throw new RuntimeException("Error guardando la imagen del producto", e);
             }
         } else if (idExistente != null) {
-            // es una edicion y no se subio imagen nueva: conservamos la imagen actual
+            // es una edicion sin imagen nueva: conservamos la foto y el estado "active" actuales
             Item itemActual = dao.buscarPorId(idExistente);
             if (itemActual != null) {
-                item.setImagenProducto(itemActual.getImagenProducto());
+                item.setFoto(itemActual.getFoto());
             }
         }
 

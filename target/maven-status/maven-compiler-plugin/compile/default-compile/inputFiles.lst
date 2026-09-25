@@ -2,4 +2,7 @@ C:\Users\PC-08\Documents\daniel\inventario\src\main\java\inventario\routes\ItemR
 C:\Users\PC-08\Documents\daniel\inventario\src\main\java\inventario\model\Item.java
 C:\Users\PC-08\Documents\daniel\inventario\src\main\java\inventario\App.java
 C:\Users\PC-08\Documents\daniel\inventario\src\main\java\inventario\dao\ItemDAO.java
+C:\Users\PC-08\Documents\daniel\inventario\src\main\java\inventario\model\Categoria.java
 C:\Users\PC-08\Documents\daniel\inventario\src\main\java\inventario\config\ConexionDB.java
+C:\Users\PC-08\Documents\daniel\inventario\src\main\java\inventario\dao\CategoriaDAO.java
+C:\Users\PC-08\Documents\daniel\inventario\src\main\java\inventario\routes\CategoriaRoutes.java

@@ -2,7 +2,6 @@ package inventario.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,29 +11,31 @@ import inventario.model.Item;
 
 public class ItemDAO {
 
-    // create del crud
     public void guardarItem(Item item) {
         String sql = """
             INSERT INTO items
-            (codigo_inventario, producto, nombre, descripcion, precio_unitario,
-             cantidad_existencias, valor_inventario, fecha_ingreso, imagen_producto, observaciones, descontinuado)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (codigo_inventario, id_categoria, nombre, marca, modelo, descripcion,
+             precio_unitario, cantidad_existencias, valor_inventario, foto, notas,
+             active, fecha_compra)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         try {
             Connection conexion = ConexionDB.conectar();
             PreparedStatement stmt = conexion.prepareStatement(sql);
             stmt.setString(1, item.getCodigoInventario());
-            stmt.setString(2, item.getProducto());
+            stmt.setInt(2, item.getIdCategoria());
             stmt.setString(3, item.getNombre());
-            stmt.setString(4, item.getDescripcion());
-            stmt.setDouble(5, item.getPrecioUnitario());
-            stmt.setInt(6, item.getCantidadExistencias());
-            stmt.setDouble(7, item.getPrecioUnitario() * item.getCantidadExistencias());
-            stmt.setString(8, item.getFechaIngreso());
-            stmt.setString(9, item.getImagenProducto());
-            stmt.setString(10, item.getObservaciones());
-            stmt.setBoolean(11, item.isDescontinuado());
+            stmt.setString(4, item.getMarca());
+            stmt.setString(5, item.getModelo());
+            stmt.setString(6, item.getDescripcion());
+            stmt.setDouble(7, item.getPrecioUnitario());
+            stmt.setInt(8, item.getCantidadExistencias());
+            stmt.setDouble(9, item.getPrecioUnitario() * item.getCantidadExistencias());
+            stmt.setString(10, item.getFoto());
+            stmt.setString(11, item.getNotas());
+            stmt.setInt(12, 1); // un item nuevo siempre nace activo
+            stmt.setString(13, item.getFechaCompra());
             stmt.executeUpdate();
             System.out.println("Producto guardado correctamente");
             conexion.close();
@@ -43,13 +44,12 @@ public class ItemDAO {
         }
     }
 
-    // Actualiza un item existente en la base de datos
     public void actualizarItem(Item item) {
         String sql = """
             UPDATE items
-            SET codigo_inventario = ?, producto = ?, nombre = ?, descripcion = ?,
-                precio_unitario = ?, cantidad_existencias = ?, valor_inventario = ?,
-                fecha_ingreso = ?, imagen_producto = ?, observaciones = ?
+            SET codigo_inventario = ?, id_categoria = ?, nombre = ?, marca = ?, modelo = ?,
+                descripcion = ?, precio_unitario = ?, cantidad_existencias = ?, valor_inventario = ?,
+                foto = ?, notas = ?, active = ?, fecha_compra = ?
             WHERE id = ?
             """;
 
@@ -57,16 +57,19 @@ public class ItemDAO {
             Connection conexion = ConexionDB.conectar();
             PreparedStatement stmt = conexion.prepareStatement(sql);
             stmt.setString(1, item.getCodigoInventario());
-            stmt.setString(2, item.getProducto());
+            stmt.setInt(2, item.getIdCategoria());
             stmt.setString(3, item.getNombre());
-            stmt.setString(4, item.getDescripcion());
-            stmt.setDouble(5, item.getPrecioUnitario());
-            stmt.setInt(6, item.getCantidadExistencias());
-            stmt.setDouble(7, item.getPrecioUnitario() * item.getCantidadExistencias());
-            stmt.setString(8, item.getFechaIngreso());
-            stmt.setString(9, item.getImagenProducto());
-            stmt.setString(10, item.getObservaciones());
-            stmt.setInt(11, item.getId());
+            stmt.setString(4, item.getMarca());
+            stmt.setString(5, item.getModelo());
+            stmt.setString(6, item.getDescripcion());
+            stmt.setDouble(7, item.getPrecioUnitario());
+            stmt.setInt(8, item.getCantidadExistencias());
+            stmt.setDouble(9, item.getPrecioUnitario() * item.getCantidadExistencias());
+            stmt.setString(10, item.getFoto());
+            stmt.setString(11, item.getNotas());
+            stmt.setInt(12, item.getActive());
+            stmt.setString(13, item.getFechaCompra());
+            stmt.setInt(14, item.getId());
             stmt.executeUpdate();
             System.out.println("Producto actualizado correctamente");
             conexion.close();
@@ -75,28 +78,23 @@ public class ItemDAO {
         }
     }
 
+    // solo trae los items activos, con el nombre de su categoria incluido
     public List<Item> listarItems() {
         List<Item> lista = new ArrayList<>();
+        String sql = """
+            SELECT i.*, c.nombre AS nombre_categoria
+            FROM items i
+            JOIN categorias c ON c.id = i.id_categoria
+            WHERE i.active = 1
+            ORDER BY c.nombre, i.nombre
+            """;
         try {
             Connection conexion = ConexionDB.conectar();
-            Statement stmt = conexion.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM items");
+            PreparedStatement stmt = conexion.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Item item = new Item();
-                item.setId(rs.getInt("id"));
-                item.setCodigoInventario(rs.getString("codigo_inventario"));
-                item.setProducto(rs.getString("producto"));
-                item.setNombre(rs.getString("nombre"));
-                item.setDescripcion(rs.getString("descripcion"));
-                item.setPrecioUnitario(rs.getDouble("precio_unitario"));
-                item.setCantidadExistencias(rs.getInt("cantidad_existencias"));
-                item.setValorInventario(rs.getDouble("valor_inventario"));
-                item.setFechaIngreso(rs.getString("fecha_ingreso"));
-                item.setImagenProducto(rs.getString("imagen_producto"));
-                item.setObservaciones(rs.getString("observaciones"));
-                item.setDescontinuado(rs.getBoolean("descontinuado"));
-                lista.add(item);
+                lista.add(mapearItem(rs));
             }
             conexion.close();
         } catch (Exception e) {
@@ -105,10 +103,13 @@ public class ItemDAO {
         return lista;
     }
 
-    // busca un solo item por su id, lo usamos al editar para conservar
-    // la imagen anterior si no se sube una imagen nueva
     public Item buscarPorId(int id) {
-        String sql = "SELECT * FROM items WHERE id = ?";
+        String sql = """
+            SELECT i.*, c.nombre AS nombre_categoria
+            FROM items i
+            JOIN categorias c ON c.id = i.id_categoria
+            WHERE i.id = ?
+            """;
         Item item = null;
         try {
             Connection conexion = ConexionDB.conectar();
@@ -117,19 +118,7 @@ public class ItemDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                item = new Item();
-                item.setId(rs.getInt("id"));
-                item.setCodigoInventario(rs.getString("codigo_inventario"));
-                item.setProducto(rs.getString("producto"));
-                item.setNombre(rs.getString("nombre"));
-                item.setDescripcion(rs.getString("descripcion"));
-                item.setPrecioUnitario(rs.getDouble("precio_unitario"));
-                item.setCantidadExistencias(rs.getInt("cantidad_existencias"));
-                item.setValorInventario(rs.getDouble("valor_inventario"));
-                item.setFechaIngreso(rs.getString("fecha_ingreso"));
-                item.setImagenProducto(rs.getString("imagen_producto"));
-                item.setObservaciones(rs.getString("observaciones"));
-                item.setDescontinuado(rs.getBoolean("descontinuado"));
+                item = mapearItem(rs);
             }
             conexion.close();
         } catch (Exception e) {
@@ -138,21 +127,41 @@ public class ItemDAO {
         return item;
     }
 
-    // eliminar algun elemento de la base de datos
+    // en vez de borrar el registro, lo marca como inactivo para no perder el historial
     public void eliminarItem(int id) {
-        String sql = """
-            DELETE FROM items
-            WHERE id = ?
-            """;
+        String sql = "UPDATE items SET active = 0 WHERE id = ?";
         try {
             Connection conexion = ConexionDB.conectar();
             PreparedStatement stmt = conexion.prepareStatement(sql);
             stmt.setInt(1, id);
             stmt.executeUpdate();
-            System.out.println("Producto eliminado correctamente");
+            System.out.println("Producto marcado como inactivo");
             conexion.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    // arma un Item a partir de una fila del ResultSet, para no repetir el mismo bloque 3 veces
+    private Item mapearItem(ResultSet rs) throws Exception {
+        Item item = new Item();
+        item.setId(rs.getInt("id"));
+        item.setCodigoInventario(rs.getString("codigo_inventario"));
+        item.setIdCategoria(rs.getInt("id_categoria"));
+        item.setNombreCategoria(rs.getString("nombre_categoria"));
+        item.setNombre(rs.getString("nombre"));
+        item.setMarca(rs.getString("marca"));
+        item.setModelo(rs.getString("modelo"));
+        item.setDescripcion(rs.getString("descripcion"));
+        item.setPrecioUnitario(rs.getDouble("precio_unitario"));
+        item.setCantidadExistencias(rs.getInt("cantidad_existencias"));
+        item.setValorInventario(rs.getDouble("valor_inventario"));
+        item.setFoto(rs.getString("foto"));
+        item.setNotas(rs.getString("notas"));
+        item.setActive(rs.getInt("active"));
+        item.setFechaCompra(rs.getString("fecha_compra"));
+        item.setFechaRegistro(rs.getString("fecha_registro"));
+        item.setFechaActualizacion(rs.getString("fecha_actualizacion"));
+        return item;
     }
 }

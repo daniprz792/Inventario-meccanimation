@@ -31,7 +31,7 @@
             <thead>
                 <tr>
                     <th>Código</th>
-                    <th>Producto</th>
+                    <th>Categoria</th>
                     <th>Nombre</th>
                     <th>Precio</th>
                     <th>Cantidad</th>
@@ -50,56 +50,68 @@
             <button class="modal-cerrar" onclick="cerrarFormulario()">&times;</button>
             <h2 id="form-titulo">Agregar Producto</h2>
 
+
             <form id="form-item" enctype="multipart/form-data">
-                <input type="hidden" id="itemId">
+    <input type="hidden" id="itemId">
 
-                <div class="campo">
-                    <label>Código:</label>
-                    <input type="text" id="codigoInventario" required>
-                </div>
+    <div class="campo">
+        <label>Código:</label>
+        <input type="text" id="codigoInventario" required>
+    </div>
 
-                <div class="campo">
-                    <label>Producto:</label>
-                    <input type="text" id="producto" required>
-                </div>
+    <div class="campo">
+        <label>Categoría:</label>
+        <select id="idCategoria" required></select>
+    </div>
 
-                <div class="campo">
-                    <label>Nombre:</label>
-                    <input type="text" id="nombre" required>
-                </div>
+    <div class="campo">
+        <label>Nombre:</label>
+        <input type="text" id="nombre" required>
+    </div>
 
-                <div class="campo">
-                    <label>Descripcion:</label>
-                    <input type="text" id="descripcion">
-                </div>
+    <div class="campo">
+        <label>Marca:</label>
+        <input type="text" id="marca">
+    </div>
 
-                <div class="campo">
-                    <label>Precio unitario:</label>
-                    <input type="number" min="0" id="precioUnitario" step="0.01" required>
-                </div>
+    <div class="campo">
+        <label>Modelo:</label>
+        <input type="text" id="modelo">
+    </div>
 
-                <div class="campo">
-                    <label>Cantidad:</label>
-                    <input type="number" min="1" id="cantidadExistencias" required>
-                </div>
+    <div class="campo">
+        <label>Descripcion:</label>
+        <input type="text" id="descripcion">
+    </div>
 
-                <div class="campo">
-                    <label>Fecha ingreso:</label>
-                    <input type="date" id="fechaIngreso">
-                </div>
+    <div class="campo">
+        <label>Precio unitario:</label>
+        <input type="number" min="0" id="precioUnitario" step="0.01" required>
+    </div>
 
-                <div class="campo">
-                    <label>Observaciones:</label>
-                    <input type="text" id="observaciones">
-                </div>
+    <div class="campo">
+        <label>Cantidad:</label>
+        <input type="number" min="1" id="cantidadExistencias" required>
+    </div>
 
-                <div class="campo">
-                    <label>Imagen del producto:</label>
-                    <input type="file" id="imagenProducto" accept="image/*">
-                </div>
+    <div class="campo">
+        <label>Fecha de compra:</label>
+        <input type="date" id="fechaCompra">
+    </div>
 
-                <button type="submit" class="btn-guardar">Guardar</button>
-            </form>
+    <div class="campo">
+        <label>Notas:</label>
+        <input type="text" id="notas">
+    </div>
+
+    <div class="campo">
+        <label>Imagen del producto:</label>
+        <input type="file" id="imagenProducto" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn-guardar">Guardar</button>
+</form>
+            
         </div>
     </div>
 
