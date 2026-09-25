@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-//  datos para conectarse mysql //
+//  datos para conectarse mysql 
 
 public class ConexionDB {
 

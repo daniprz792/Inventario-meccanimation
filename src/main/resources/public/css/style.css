@@ -37,6 +37,11 @@ h2 {
  text-align: center;
 }
 
+/*logo */
+.seccion-logo{
+    margin: 2rem 0;
+}
+
 /* Cabecera */
 .cabecera h1 {
  font-size: 4.8rem;
@@ -61,6 +66,7 @@ h2 {
  flex-direction: column;
  text-align: left;
 }
+
 .campo label {
  font-size: 1.3rem;
  margin-bottom: 0.4rem;
@@ -74,6 +80,10 @@ h2 {
  color: var(--negro);
  min-width: 14rem;
 }
+
+/*i*/
+
+
 
 .btn-guardar {
  font-family: var(--fuente-principal);

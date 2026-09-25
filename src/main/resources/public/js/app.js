@@ -1,5 +1,21 @@
-// conecta el html con la api de java 
+// conecta el html con la api de java
 
+const modalForm = document.getElementById('modal-form');
+const formTitulo = document.getElementById('form-titulo');
+const btnAbrirModal = document.getElementById('btn-abrir-modal');
+
+// abre el modal en modo "agregar", limpiando el formulario
+btnAbrirModal.addEventListener('click', () => {
+    document.getElementById('form-item').reset();
+    document.getElementById('itemId').value = '';
+    formTitulo.textContent = 'Agregar Producto';
+    modalForm.classList.remove('oculto');
+});
+
+// cierra el modal del formulario
+function cerrarFormulario() {
+    modalForm.classList.add('oculto');
+}
 
 // funcion para cargar los items del inventario en la tabla
 async function cargarItems() {
@@ -8,7 +24,7 @@ async function cargarItems() {
 
     const tbody = document.getElementById('tabla-items');
     tbody.innerHTML = '';
-// recorre cada item y crea una fila en la tabla con los datos del item
+    // recorre cada item y crea una fila en la tabla con los datos del item
     items.forEach(item => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
@@ -28,7 +44,7 @@ async function cargarItems() {
     });
 }
 
-// funcion para editar un item del inventario, llena el formulario con los datos del item seleccionado
+// funcion para editar un item: llena el formulario y abre el modal en modo "editar"
 function editarItem(id, codigo, producto, nombre, descripcion, precio, cantidad, fecha, observaciones) {
     document.getElementById('itemId').value = id;
     document.getElementById('codigoInventario').value = codigo;
@@ -39,6 +55,9 @@ function editarItem(id, codigo, producto, nombre, descripcion, precio, cantidad,
     document.getElementById('cantidadExistencias').value = cantidad;
     document.getElementById('fechaIngreso').value = fecha;
     document.getElementById('observaciones').value = observaciones;
+
+    formTitulo.textContent = 'Editar Producto';
+    modalForm.classList.remove('oculto');
 }
 
 // funcion para eliminar un item del inventario, pide confirmacion en el navegador antes de eliminar
@@ -67,48 +86,52 @@ function verDetalle(item) {
 }
 
 // funcion para cerrar el modal de detalle
-
 function cerrarDetalle() {
     document.getElementById('modal-detalle').classList.add('oculto');
 }
 
-// evento para enviar el formulario de agregar o editar un item del inventario, si el id del item es nulo se agrega un nuevo item, si no se edita el item existente
+// evento para enviar el formulario de agregar o editar un item del inventario
+// ahora se usa FormData en vez de JSON, para poder incluir el archivo de imagen
 document.getElementById('form-item').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // obtiene el id del item del formulario, si es nulo se agrega un nuevo item, si no se edita el item existente
     const id = document.getElementById('itemId').value;
-// crea un objeto con los datos del item del formulario
-    const item = {
-        codigoInventario: document.getElementById('codigoInventario').value,
-        producto: document.getElementById('producto').value,
-        nombre: document.getElementById('nombre').value,
-        descripcion: document.getElementById('descripcion').value,
-        precioUnitario: parseFloat(document.getElementById('precioUnitario').value),
-        cantidadExistencias: parseInt(document.getElementById('cantidadExistencias').value),
-        fechaIngreso: document.getElementById('fechaIngreso').value,
-        observaciones: document.getElementById('observaciones').value,
-        descontinuado: false
-    };
 
-    // si el id del item es nulo se agrega un nuevo item, si no se edita el item existente
+    const datos = new FormData();
+    datos.append('codigoInventario', document.getElementById('codigoInventario').value);
+    datos.append('producto', document.getElementById('producto').value);
+    datos.append('nombre', document.getElementById('nombre').value);
+    datos.append('descripcion', document.getElementById('descripcion').value);
+    datos.append('precioUnitario', document.getElementById('precioUnitario').value);
+    datos.append('cantidadExistencias', document.getElementById('cantidadExistencias').value);
+    datos.append('fechaIngreso', document.getElementById('fechaIngreso').value);
+    datos.append('observaciones', document.getElementById('observaciones').value);
+    datos.append('descontinuado', 'false');
+
+    // solo se agrega el archivo si el usuario seleccionó uno
+    const archivoImagen = document.getElementById('imagenProducto').files[0];
+    if (archivoImagen) {
+        datos.append('imagen', archivoImagen);
+    }
+
+    // IMPORTANTE: no poner headers Content-Type aquí; el navegador
+    // arma el boundary de multipart automáticamente
     if (id) {
         await fetch(`/api/items/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item)
+            body: datos
         });
     } else {
         await fetch('/api/items', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item)
+            body: datos
         });
     }
 
-        // limpia el formulario y recarga la tabla de items
+    // limpia el formulario, cierra el modal y recarga la tabla
     document.getElementById('form-item').reset();
     document.getElementById('itemId').value = '';
+    cerrarFormulario();
     cargarItems();
 });
 
