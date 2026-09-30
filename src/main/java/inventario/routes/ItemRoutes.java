@@ -17,8 +17,16 @@ public class ItemRoutes {
     public static void registrar(Javalin app) {
         ItemDAO dao = new ItemDAO();
 
+        // GET /api/items              -> todos los productos activos
+        // GET /api/items?categoria=3  -> solo los productos activos de esa categoria
         app.get("/api/items", ctx -> {
-            ctx.json(dao.listarItems());
+            String categoriaParam = ctx.queryParam("categoria");
+            if (categoriaParam != null && !categoriaParam.isBlank()) {
+                int idCategoria = Integer.parseInt(categoriaParam);
+                ctx.json(dao.listarPorCategoria(idCategoria));
+            } else {
+                ctx.json(dao.listarItems());
+            }
         });
 
         app.post("/api/items", ctx -> {
@@ -46,6 +54,8 @@ public class ItemRoutes {
         Item item = new Item();
         item.setCodigoInventario(ctx.formParam("codigoInventario"));
         item.setIdCategoria(Integer.parseInt(ctx.formParam("idCategoria")));
+        item.setRequiereUnidades("true".equals(ctx.formParam("requiereUnidades"))
+                || "on".equals(ctx.formParam("requiereUnidades")));
         item.setNombre(ctx.formParam("nombre"));
         item.setMarca(ctx.formParam("marca"));
         item.setModelo(ctx.formParam("modelo"));
@@ -54,10 +64,13 @@ public class ItemRoutes {
         item.setCantidadExistencias(Integer.parseInt(ctx.formParam("cantidadExistencias")));
         item.setFechaCompra(ctx.formParam("fechaCompra"));
         item.setNotas(ctx.formParam("notas"));
-        
-        
-        UploadedFile archivo = ctx.uploadedFile("imagen");
 
+        Item itemActual = null;
+        if (idExistente != null) {
+            itemActual = dao.buscarPorId(idExistente);
+        }
+
+        UploadedFile archivo = ctx.uploadedFile("imagen");
         if (archivo != null) {
             try {
                 String nombreArchivo = System.currentTimeMillis() + "_" + archivo.filename();
@@ -68,13 +81,11 @@ public class ItemRoutes {
             } catch (IOException e) {
                 throw new RuntimeException("Error guardando la imagen del producto", e);
             }
-        } else if (idExistente != null) {
-            // es una edicion sin imagen nueva: conservamos la foto y el estado "active" actuales
-            Item itemActual = dao.buscarPorId(idExistente);
-            if (itemActual != null) {
-                item.setFoto(itemActual.getFoto());
-            }
+        } else if (itemActual != null) {
+            item.setFoto(itemActual.getFoto());
         }
+
+        item.setActive(itemActual != null ? itemActual.getActive() : 1);
 
         return item;
     }

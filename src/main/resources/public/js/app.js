@@ -5,12 +5,22 @@ const formTitulo = document.getElementById('form-titulo');
 const btnAbrirModal = document.getElementById('btn-abrir-modal');
 const selectCategoria = document.getElementById('idCategoria');
 
-// carga las categorias en el <select>, con una opcion al final para crear una nueva
+//  categorias 
+
 async function cargarCategorias(idSeleccionado) {
     const respuesta = await fetch('/api/categorias');
     const categorias = await respuesta.json();
 
     selectCategoria.innerHTML = '';
+    if (categorias.length === 0) {
+        const opcionVacia = document.createElement('option');
+        opcionVacia.value = '';
+        opcionVacia.textContent = 'Seleccione una categoría';
+        opcionVacia.disabled = true;
+        opcionVacia.selected = true;
+        selectCategoria.appendChild(opcionVacia);
+    }
+
     categorias.forEach(cat => {
         const opcion = document.createElement('option');
         opcion.value = cat.id;
@@ -28,28 +38,46 @@ async function cargarCategorias(idSeleccionado) {
     }
 }
 
-// si el usuario elige "+ Nueva categoría...", pide el nombre y la crea
-selectCategoria.addEventListener('change', async () => {
-    if (selectCategoria.value !== '__nueva__') return;
+const modalCategoria = document.getElementById('modal-categoria');
+const inputNuevaCategoria = document.getElementById('nombreNuevaCategoria');
 
-    const nombre = prompt('Nombre de la nueva categoría:');
-    if (!nombre || !nombre.trim()) {
-        await cargarCategorias();
-        return;
+selectCategoria.addEventListener('change', () => {
+    if (selectCategoria.value !== '__nueva__') return;
+    inputNuevaCategoria.value = '';
+    modalCategoria.classList.remove('oculto');
+    inputNuevaCategoria.focus();
+});
+
+// si cancela, regresamos el select a la primera categoria real (no dejamos "+ Nueva..." seleccionado)
+function cancelarNuevaCategoria() {
+    modalCategoria.classList.add('oculto');
+    if (selectCategoria.options.length > 1) {
+        selectCategoria.selectedIndex = 0;
     }
+}
+
+document.getElementById('form-categoria').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const nombre = inputNuevaCategoria.value.trim();
+    if (!nombre) return;
 
     const datos = new FormData();
-    datos.append('nombre', nombre.trim());
+    datos.append('nombre', nombre);
 
     const respuesta = await fetch('/api/categorias', { method: 'POST', body: datos });
     if (respuesta.ok) {
         const nuevaCategoria = await respuesta.json();
         await cargarCategorias(nuevaCategoria.id);
+        modalCategoria.classList.add('oculto');
     } else {
         alert('No se pudo crear la categoría');
         await cargarCategorias();
+        modalCategoria.classList.add('oculto');
     }
 });
+
+//  modal de agregar/editar producto 
 
 btnAbrirModal.addEventListener('click', async () => {
     document.getElementById('form-item').reset();
@@ -63,6 +91,8 @@ function cerrarFormulario() {
     modalForm.classList.add('oculto');
 }
 
+//  tabla de productos 
+
 async function cargarItems() {
     const respuesta = await fetch('/api/items');
     const items = await respuesta.json();
@@ -71,6 +101,11 @@ async function cargarItems() {
     tbody.innerHTML = '';
     items.forEach(item => {
         const fila = document.createElement('tr');
+
+        const botonUnidades = item.requiereUnidades
+            ? `<button class="btn-detalle" onclick="abrirUnidades(${item.id}, '${item.nombre}')">Ver unidades</button>`
+            : `<span style="opacity:.5">N/A</span>`;
+
         fila.innerHTML = `
             <td>${item.codigoInventario}</td>
             <td>${item.nombreCategoria}</td>
@@ -78,6 +113,7 @@ async function cargarItems() {
             <td>$${item.precioUnitario.toLocaleString()}</td>
             <td>${item.cantidadExistencias}</td>
             <td>$${item.valorInventario.toLocaleString()}</td>
+            <td>${botonUnidades}</td>
             <td>
                 <button class="btn-detalle" onclick='verDetalle(${JSON.stringify(item)})'>Detalle</button>
                 <button class="btn-editar" onclick='editarItem(${JSON.stringify(item)})'>Editar</button>
@@ -88,7 +124,6 @@ async function cargarItems() {
     });
 }
 
-// recibe el item completo (en vez de una lista larga de parametros) para simplificar
 async function editarItem(item) {
     document.getElementById('itemId').value = item.id;
     document.getElementById('codigoInventario').value = item.codigoInventario;
@@ -100,6 +135,7 @@ async function editarItem(item) {
     document.getElementById('cantidadExistencias').value = item.cantidadExistencias;
     document.getElementById('fechaCompra').value = item.fechaCompra ?? '';
     document.getElementById('notas').value = item.notas ?? '';
+    document.getElementById('requiereUnidades').checked = !!item.requiereUnidades;
 
     await cargarCategorias(item.idCategoria);
 
@@ -150,6 +186,7 @@ document.getElementById('form-item').addEventListener('submit', async (e) => {
     datos.append('cantidadExistencias', document.getElementById('cantidadExistencias').value);
     datos.append('fechaCompra', document.getElementById('fechaCompra').value);
     datos.append('notas', document.getElementById('notas').value);
+    datos.append('requiereUnidades', document.getElementById('requiereUnidades').checked ? 'true' : 'false');
 
     const archivoImagen = document.getElementById('imagenProducto').files[0];
     if (archivoImagen) {
@@ -167,5 +204,80 @@ document.getElementById('form-item').addEventListener('submit', async (e) => {
     cerrarFormulario();
     cargarItems();
 });
+
+//  modal de unidades individuales 
+
+const modalUnidades = document.getElementById('modal-unidades');
+const unidadesTitulo = document.getElementById('unidades-titulo');
+const unidadProductoIdInput = document.getElementById('unidadProductoId');
+
+async function abrirUnidades(idProducto, nombreProducto) {
+    unidadProductoIdInput.value = idProducto;
+    unidadesTitulo.textContent = `Unidades de: ${nombreProducto}`;
+    document.getElementById('form-unidad').reset();
+    unidadProductoIdInput.value = idProducto; // el reset() borra el hidden, lo volvemos a poner
+    await cargarUnidades(idProducto);
+    modalUnidades.classList.remove('oculto');
+}
+
+function cerrarUnidades() {
+    modalUnidades.classList.add('oculto');
+    cargarItems(); // por si cambio la cantidad de unidades, refresca la tabla principal
+}
+
+async function cargarUnidades(idProducto) {
+    const respuesta = await fetch(`/api/productos/${idProducto}/unidades`);
+    const unidades = await respuesta.json();
+
+    const tbody = document.getElementById('tabla-unidades');
+    tbody.innerHTML = '';
+
+    unidades.forEach(unidad => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>${unidad.codigoUnidad}</td>
+            <td>
+                <select onchange="cambiarEstadoUnidad(${unidad.id}, this.value, ${idProducto})">
+                    <option value="disponible" ${unidad.estado === 'disponible' ? 'selected' : ''}>Disponible</option>
+                    <option value="asignado" ${unidad.estado === 'asignado' ? 'selected' : ''}>Asignado</option>
+                    <option value="dañado" ${unidad.estado === 'dañado' ? 'selected' : ''}>Dañado</option>
+                    <option value="baja" ${unidad.estado === 'baja' ? 'selected' : ''}>Baja</option>
+                </select>
+            </td>
+            <td>
+                <button class="btn-eliminar" onclick="eliminarUnidad(${unidad.id}, ${idProducto})">Eliminar</button>
+            </td>
+        `;
+        tbody.appendChild(fila);
+    });
+}
+
+document.getElementById('form-unidad').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const idProducto = unidadProductoIdInput.value;
+    const datos = new FormData();
+    datos.append('codigoUnidad', document.getElementById('codigoUnidad').value);
+    datos.append('estado', 'disponible');
+
+    await fetch(`/api/productos/${idProducto}/unidades`, { method: 'POST', body: datos });
+
+    document.getElementById('form-unidad').reset();
+    unidadProductoIdInput.value = idProducto;
+    await cargarUnidades(idProducto);
+});
+
+async function cambiarEstadoUnidad(idUnidad, estado, idProducto) {
+    const datos = new FormData();
+    datos.append('estado', estado);
+    await fetch(`/api/unidades/${idUnidad}`, { method: 'PUT', body: datos });
+    await cargarUnidades(idProducto);
+}
+
+async function eliminarUnidad(idUnidad, idProducto) {
+    if (!confirm('¿Eliminar esta unidad?')) return;
+    await fetch(`/api/unidades/${idUnidad}`, { method: 'DELETE' });
+    await cargarUnidades(idProducto);
+}
 
 cargarItems();

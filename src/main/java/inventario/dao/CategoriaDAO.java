@@ -12,17 +12,16 @@ import inventario.model.Categoria;
 
 public class CategoriaDAO {
 
-    // devuelve todas las categorias ordenadas alfabeticamente
     public List<Categoria> listarCategorias() {
         List<Categoria> lista = new ArrayList<>();
         try {
             Connection conexion = ConexionDB.conectar();
             Statement stmt = conexion.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM categorias ORDER BY nombre");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM categoria ORDER BY nombre");
 
             while (rs.next()) {
                 Categoria categoria = new Categoria();
-                categoria.setId(rs.getInt("id"));
+                categoria.setId(rs.getInt("id_categoria"));
                 categoria.setNombre(rs.getString("nombre"));
                 lista.add(categoria);
             }
@@ -33,9 +32,8 @@ public class CategoriaDAO {
         return lista;
     }
 
-    // crea una categoria nueva y devuelve el id que le asigno la base de datos
     public int crearCategoria(String nombre) {
-        String sql = "INSERT INTO categorias (nombre) VALUES (?)";
+        String sql = "INSERT INTO categoria (nombre) VALUES (?)";
         int idGenerado = -1;
         try {
             Connection conexion = ConexionDB.conectar();

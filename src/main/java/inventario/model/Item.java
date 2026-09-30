@@ -2,10 +2,11 @@ package inventario.model;
 
 public class Item {
 
-    private int id;
+    private int id; // mapea a id_producto
     private String codigoInventario;
     private int idCategoria;
-    private String nombreCategoria; // solo para mostrar en la tabla, no se guarda en items
+    private boolean requiereUnidades;
+    private String nombreCategoria;
     private String nombre;
     private String marca;
     private String modelo;
@@ -40,11 +41,19 @@ public class Item {
     }
 
     public int getIdCategoria() {
-        return idCategoria; 
+        return idCategoria;
     }
 
     public void setIdCategoria(int idCategoria) {
         this.idCategoria = idCategoria;
+    }
+
+    public boolean isRequiereUnidades() {
+        return requiereUnidades;
+    }
+
+    public void setRequiereUnidades(boolean requiereUnidades) {
+        this.requiereUnidades = requiereUnidades;
     }
 
     public String getNombreCategoria() {

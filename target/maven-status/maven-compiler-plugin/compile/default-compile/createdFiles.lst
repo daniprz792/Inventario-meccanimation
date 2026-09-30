@@ -1,5 +1,8 @@
 inventario\dao\CategoriaDAO.class
 inventario\App.class
+inventario\model\Unidad.class
+inventario\dao\UnidadDAO.class
+inventario\routes\UnidadRoutes.class
 inventario\model\Item.class
 inventario\dao\ItemDAO.class
 inventario\routes\ItemRoutes.class
