@@ -5,7 +5,7 @@ const formTitulo = document.getElementById('form-titulo');
 const btnAbrirModal = document.getElementById('btn-abrir-modal');
 const selectCategoria = document.getElementById('idCategoria');
 
-//  categorias 
+// ---------- categorias ----------
 
 async function cargarCategorias(idSeleccionado) {
     const respuesta = await fetch('/api/categorias');
@@ -77,7 +77,7 @@ document.getElementById('form-categoria').addEventListener('submit', async (e) =
     }
 });
 
-//  modal de agregar/editar producto 
+// ---------- modal de agregar/editar producto ----------
 
 btnAbrirModal.addEventListener('click', async () => {
     document.getElementById('form-item').reset();
@@ -91,7 +91,27 @@ function cerrarFormulario() {
     modalForm.classList.add('oculto');
 }
 
-//  tabla de productos 
+// ---------- búsqueda en tiempo real ----------
+
+const inputBuscar = document.getElementById('buscarProducto');
+
+function filtrarTabla() {
+    const termino = inputBuscar.value.trim().toLowerCase();
+    const filas = document.querySelectorAll('#tabla-items tr');
+
+    filas.forEach(fila => {
+        const codigo = fila.children[0]?.textContent.toLowerCase() || '';
+        const categoria = fila.children[1]?.textContent.toLowerCase() || '';
+        const nombre = fila.children[2]?.textContent.toLowerCase() || '';
+
+        const coincide = codigo.includes(termino) || categoria.includes(termino) || nombre.includes(termino);
+        fila.style.display = coincide ? '' : 'none';
+    });
+}
+
+inputBuscar.addEventListener('input', filtrarTabla);
+
+// ---------- tabla de productos ----------
 
 async function cargarItems() {
     const respuesta = await fetch('/api/items');
@@ -122,6 +142,8 @@ async function cargarItems() {
         `;
         tbody.appendChild(fila);
     });
+
+    filtrarTabla(); // reaplica el filtro activo despues de recargar la tabla
 }
 
 async function editarItem(item) {
@@ -205,7 +227,7 @@ document.getElementById('form-item').addEventListener('submit', async (e) => {
     cargarItems();
 });
 
-//  modal de unidades individuales 
+// ---------- modal de unidades individuales ----------
 
 const modalUnidades = document.getElementById('modal-unidades');
 const unidadesTitulo = document.getElementById('unidades-titulo');

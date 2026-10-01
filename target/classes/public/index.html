@@ -24,6 +24,10 @@
         <button id="btn-abrir-modal" class="btn-guardar">+ Agregar Producto</button>
     </div>
 
+    <div class="seccion-busqueda"> 
+    <input type="text" id="buscarProducto" placeholder="Buscar por código, nombre o categoría...">
+</div>
+
     <div class="seccion-tabla">
         <h2>Inventario</h2>
 
@@ -141,7 +145,7 @@
             <form id="form-unidad">
                 <input type="hidden" id="unidadProductoId">
                 <div class="campo">
-                    <label>Código de unidad (ej: número de serie):</label>
+                    <label>Código de unidad (ej: numero de serie):</label>
                     <input type="text" id="codigoUnidad" required>
                 </div>
                 <button type="submit" class="btn-guardar">+ Agregar unidad</button>
@@ -150,7 +154,7 @@
             <table class="tabla-inventario">
                 <thead>
                     <tr>
-                        <th>Código</th>
+                        <th>Codigo</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -168,7 +172,7 @@
 
             <form id="form-categoria">
                 <div class="campo">
-                    <label>Nombre de la categoría:</label>
+                    <label>Nombre de la categoria :</label>
                     <input type="text" id="nombreNuevaCategoria" required autofocus>
                 </div>
                 <button type="submit" class="btn-guardar">Agregar</button>

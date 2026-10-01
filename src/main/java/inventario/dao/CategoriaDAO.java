@@ -12,6 +12,8 @@ import inventario.model.Categoria;
 
 public class CategoriaDAO {
 
+    // devuelve todas las categorias de la base de datos, ordenadas por nombre
+
     public List<Categoria> listarCategorias() {
         List<Categoria> lista = new ArrayList<>();
         try {
@@ -19,6 +21,7 @@ public class CategoriaDAO {
             Statement stmt = conexion.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM categoria ORDER BY nombre");
 
+            // mapea cada fila del ResultSet a un objeto Categoria y lo agrega a la lista
             while (rs.next()) {
                 Categoria categoria = new Categoria();
                 categoria.setId(rs.getInt("id_categoria"));
@@ -32,10 +35,12 @@ public class CategoriaDAO {
         return lista;
     }
 
+    // crea una nueva categoria y devuelve el id generado, o -1 si hubo un error
+
     public int crearCategoria(String nombre) {
         String sql = "INSERT INTO categoria (nombre) VALUES (?)";
         int idGenerado = -1;
-        try {
+        try { // abre la conexion, prepara la sentencia y ejecuta el insert
             Connection conexion = ConexionDB.conectar();
             PreparedStatement stmt = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, nombre);

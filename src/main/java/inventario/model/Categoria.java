@@ -2,6 +2,8 @@ package inventario.model;
 
 public class Categoria {
 
+    // atributos de la clase Categoria
+
     private int id;
     private String nombre;
 
@@ -11,6 +13,7 @@ public class Categoria {
     public int getId() {
         return id;
     }
+    // setters y getters para los atributos de la clase Categoria
 
     public void setId(int id) {
         this.id = id;

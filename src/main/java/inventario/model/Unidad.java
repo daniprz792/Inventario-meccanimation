@@ -8,12 +8,16 @@ public class Unidad {
     private String estado; // disponible, asignado, dañado, baja...
     private String fechaRegistro;
 
+    // constructor vacío
+
     public Unidad() {
     }
 
     public int getId() {
         return id;
     }
+
+    // setters y getters para los atributos de la clase Unidad
 
     public void setId(int id) {
         this.id = id;

@@ -82,9 +82,6 @@ h2 {
 }
 
 /*i*/
-
-
-
 .btn-guardar {
  font-family: var(--fuente-principal);
  font-size: 1.4rem;
@@ -154,7 +151,7 @@ h2 {
 .btn-eliminar:hover {
  background: var(--rojo-hover)
 }
-/* Modal de detalle */
+/* Modal del detalle */
 .modal {
  position: fixed;
  top: 0; left: 0;
@@ -197,11 +194,147 @@ h2 {
  padding: 0;
 }
 .btn-detalle {
- background: var(--azul-transparente);
- color: var(--blanco);
- border: 1px solid var(--gris);
+     font-size: 1.2rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    color: var(--blanco);
+    background: var(--naranja);
 }
 .btn-detalle:hover {
- background: var(--gris);
- color: var(--negro);
+ background: var(--naranja-hover);
+ color: var(--blanco);
+}
+
+/* Barra de busqueda */
+.seccion-busqueda {
+ max-width: 70rem;
+ margin: 2rem auto 2.5rem;
+}
+.seccion-busqueda input {
+ width: 100%;
+ font-family: var(--fuente-principal);
+ font-size: 1.4rem;
+ padding: 1rem 1.5rem;
+ background: var(--azul-claro);
+ color: var(--blanco);
+ border: 2px solid var(--naranja);
+ border-radius: 2rem;
+ outline: none;
+}
+.seccion-busqueda input::placeholder {
+ color: var(--gris);
+ opacity: 0.6;
+}
+.seccion-busqueda input:focus {
+ border-color: var(--naranja-hover);
+}
+/* Modal de unidades */
+#form-unidad .campo {
+ margin-bottom: 1.5rem;
+}
+
+#form-unidad .btn-guardar {
+ margin-bottom: 2.5rem;
+ border-radius: 2rem;
+ display: inline-block;
+}
+
+/**responsive tablets*/
+@media (max-width: 768px) {
+
+    body {
+        padding: 0 1rem 3rem;
+    }
+
+    .cabecera h1 {
+        font-size: 3.2rem;
+        padding-top: 2rem;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+    }
+
+    .seccion-logo img {
+        max-width: 8rem;
+    }
+
+    /* la tabla se desborda en horizontal en vez de aplastar columnas */
+    .seccion-tabla {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tabla-inventario {
+        min-width: 70rem; /* fuerza el scroll en vez de comprimir el contenido */
+    }
+
+    .tabla-inventario th,
+    .tabla-inventario td {
+        padding: 1rem;
+        font-size: 1.3rem;
+    }
+
+    /* el formulario de producto pasa de fila a columna */
+    .seccion-formulario form,
+    #form-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .campo input,
+    .campo select {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .modal-contenido {
+        max-width: 90%;
+        padding: 2rem;
+    }
+}
+
+/*responsive*/
+@media (max-width: 480px) {
+
+    .cabecera h1 {
+        font-size: 2.4rem;
+    }
+
+    .btn-guardar {
+        width: 100%;
+    }
+
+    .seccion-busqueda input {
+        font-size: 1.3rem;
+        padding: 0.8rem 1.2rem;
+    }
+
+    /* los botones de Acciones se apilan en vez de quedar en fila */
+    .tabla-inventario td:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .btn-editar,
+    .btn-eliminar,
+    .btn-detalle {
+        width: 100%;
+        text-align: center;
+    }
+
+    .modal-contenido {
+        width: 95%;
+        padding: 1.5rem;
+        max-height: 85vh;
+        overflow-y: auto; /* por si el formulario es mas alto que la pantalla */
+    }
+
+    .modal-contenido img {
+        max-height: 140px;
+    }
 }
