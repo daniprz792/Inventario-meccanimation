@@ -37,8 +37,6 @@ public class App {
     }
 }
 
-
-
                                     // estas son las pruebas que hice desde la consolola antes de pasar web 
 
         // acceso de los datos de java a mysql 

@@ -5,7 +5,35 @@ const formTitulo = document.getElementById('form-titulo');
 const btnAbrirModal = document.getElementById('btn-abrir-modal');
 const selectCategoria = document.getElementById('idCategoria');
 
-// ---------- categorias ----------
+//  modal de confirmacion reutilizable (reemplaza confirm()) 
+
+const modalConfirmacion = document.getElementById('modal-confirmacion');
+const confirmacionMensaje = document.getElementById('confirmacion-mensaje');
+const btnConfirmacionAceptar = document.getElementById('confirmacion-aceptar');
+const btnConfirmacionCancelar = document.getElementById('confirmacion-cancelar');
+
+// muestra el modal con el mensaje dado y devuelve una Promise<boolean>:
+
+// true si el usuario acepta, false si cancela o cierra el modal
+function mostrarConfirmacion(mensaje) {
+    confirmacionMensaje.textContent = mensaje;
+    modalConfirmacion.classList.remove('oculto');
+
+    return new Promise(resolve => {
+        const limpiar = () => {
+            modalConfirmacion.classList.add('oculto');
+            btnConfirmacionAceptar.removeEventListener('click', onAceptar);
+            btnConfirmacionCancelar.removeEventListener('click', onCancelar);
+        };
+        const onAceptar = () => { limpiar(); resolve(true); };
+        const onCancelar = () => { limpiar(); resolve(false); };
+
+        btnConfirmacionAceptar.addEventListener('click', onAceptar);
+        btnConfirmacionCancelar.addEventListener('click', onCancelar);
+    });
+}
+
+//  categorias 
 
 async function cargarCategorias(idSeleccionado) {
     const respuesta = await fetch('/api/categorias');
@@ -77,7 +105,7 @@ document.getElementById('form-categoria').addEventListener('submit', async (e) =
     }
 });
 
-// ---------- modal de agregar/editar producto ----------
+//  modal de agregar/editar producto 
 
 btnAbrirModal.addEventListener('click', async () => {
     document.getElementById('form-item').reset();
@@ -91,7 +119,7 @@ function cerrarFormulario() {
     modalForm.classList.add('oculto');
 }
 
-// ---------- búsqueda en tiempo real ----------
+//  búsqueda en tiempo real 
 
 const inputBuscar = document.getElementById('buscarProducto');
 
@@ -111,8 +139,7 @@ function filtrarTabla() {
 
 inputBuscar.addEventListener('input', filtrarTabla);
 
-// ---------- tabla de productos ----------
-
+//  tabla de productos
 async function cargarItems() {
     const respuesta = await fetch('/api/items');
     const items = await respuesta.json();
@@ -166,9 +193,14 @@ async function editarItem(item) {
 }
 
 async function eliminarItem(id) {
-    if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
-    await fetch(`/api/items/${id}`, { method: 'DELETE' });
-    cargarItems();
+    const confirmado = await mostrarConfirmacion('¿Seguro que quieres eliminar este producto?');
+    if (!confirmado) return;
+    const respuesta = await fetch(`/api/items/${id}`, { method: 'DELETE' });
+    if (!respuesta.ok) {
+        alert('No se pudo eliminar el producto');
+        return;
+    }
+    await cargarItems();
 }
 
 function verDetalle(item) {
@@ -215,10 +247,17 @@ document.getElementById('form-item').addEventListener('submit', async (e) => {
         datos.append('imagen', archivoImagen);
     }
 
+    let respuesta;
     if (id) {
-        await fetch(`/api/items/${id}`, { method: 'PUT', body: datos });
+        respuesta = await fetch(`/api/items/${id}`, { method: 'PUT', body: datos });
     } else {
-        await fetch('/api/items', { method: 'POST', body: datos });
+        respuesta = await fetch('/api/items', { method: 'POST', body: datos });
+    }
+
+    if (!respuesta.ok) {
+        const mensaje = await respuesta.text();
+        alert(mensaje || 'Ocurrió un error al guardar el producto');
+        return;
     }
 
     document.getElementById('form-item').reset();
@@ -227,7 +266,7 @@ document.getElementById('form-item').addEventListener('submit', async (e) => {
     cargarItems();
 });
 
-// ---------- modal de unidades individuales ----------
+//  modal de unidades individuales 
 
 const modalUnidades = document.getElementById('modal-unidades');
 const unidadesTitulo = document.getElementById('unidades-titulo');
@@ -259,7 +298,8 @@ async function cargarUnidades(idProducto) {
         fila.innerHTML = `
             <td>${unidad.codigoUnidad}</td>
             <td>
-                <select onchange="cambiarEstadoUnidad(${unidad.id}, this.value, ${idProducto})">
+                <select class="select-estado estado-${unidad.estado}"
+                        onchange="cambiarEstadoUnidad(${unidad.id}, this.value, ${idProducto}); actualizarColorEstado(this);">
                     <option value="disponible" ${unidad.estado === 'disponible' ? 'selected' : ''}>Disponible</option>
                     <option value="asignado" ${unidad.estado === 'asignado' ? 'selected' : ''}>Asignado</option>
                     <option value="dañado" ${unidad.estado === 'dañado' ? 'selected' : ''}>Dañado</option>
@@ -289,6 +329,11 @@ document.getElementById('form-unidad').addEventListener('submit', async (e) => {
     await cargarUnidades(idProducto);
 });
 
+// cambia la clase de color del select cuando el usuario elige un estado distinto
+function actualizarColorEstado(select) {
+    select.className = 'select-estado estado-' + select.value;
+}
+
 async function cambiarEstadoUnidad(idUnidad, estado, idProducto) {
     const datos = new FormData();
     datos.append('estado', estado);
@@ -297,8 +342,13 @@ async function cambiarEstadoUnidad(idUnidad, estado, idProducto) {
 }
 
 async function eliminarUnidad(idUnidad, idProducto) {
-    if (!confirm('¿Eliminar esta unidad?')) return;
-    await fetch(`/api/unidades/${idUnidad}`, { method: 'DELETE' });
+    const confirmado = await mostrarConfirmacion('¿Eliminar esta unidad?');
+    if (!confirmado) return;
+    const respuesta = await fetch(`/api/unidades/${idUnidad}`, { method: 'DELETE' });
+    if (!respuesta.ok) {
+        alert('No se pudo eliminar la unidad');
+        return;
+    }
     await cargarUnidades(idProducto);
 }
 

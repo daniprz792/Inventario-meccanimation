@@ -38,8 +38,13 @@ h2 {
 }
 
 /*logo */
-.seccion-logo{
-    margin: 2rem 0;
+.seccion-logo {
+ margin: 2rem 0;
+}
+
+.seccion-logo img {
+ width: 8rem; /* ajusta este valor al tamaño que quieras */
+ height: auto; /* mantiene la proporción, para que no se deforme */
 }
 
 /* Cabecera */
@@ -151,7 +156,8 @@ h2 {
 .btn-eliminar:hover {
  background: var(--rojo-hover)
 }
-/* Modal del detalle */
+
+/* modal del detalle */
 .modal {
  position: fixed;
  top: 0; left: 0;
@@ -166,14 +172,31 @@ h2 {
  display: none;
 }
 .modal-contenido {
- background: var(--azul-claro);
+ background: var(--azul-oscuro);
  border-radius: 1rem;
  padding: 2.5rem;
  max-width: 500px;
  width: 90%;
  text-align: left;
  position: relative;
+ max-height: 85vh;
+ overflow-y: auto; /* por si el contenido es mas alto q la pantalla */
 }
+
+/*modales tablas */
+
+#modal-unidades .unidades-tabla{
+ max-height: 40vh;
+ overflow-y: auto;
+ border-radius: 2rem;
+}
+
+#modal-unidades .tabla-inventario thead th {
+ position: sticky;
+ top: 0;
+ z-index: 1;
+}
+
 .modal-contenido h3 {
  color: var(--naranja);
  margin-top: 0;
@@ -193,21 +216,61 @@ h2 {
  cursor: pointer;
  padding: 0;
 }
-.btn-detalle {
-     font-size: 1.2rem;
-    padding: 0.6rem 1.2rem;
-    border: none;
-    border-radius: 2rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    color: var(--blanco);
-    background: var(--naranja);
+
+/* Modal de confirmacion */
+.modal-confirmacion-contenido {
+ max-width: 380px;
+ text-align: center;
 }
+
+.modal-confirmacion-contenido p {
+ font-size: 1.6rem;
+ margin: 0 0 2rem;
+}
+
+.confirmacion-botones {
+ display: flex;
+ gap: 1.5rem;
+ justify-content: center;
+}
+
+.btn-cancelar {
+ font-family: var(--fuente-principal);
+ font-size: 1.4rem;
+ font-weight: bold;
+ padding: 0.9rem 1.8rem;
+ border: 2px solid var(--gris);
+ border-radius: 2rem;
+ cursor: pointer;
+ background: transparent;
+ color: var(--blanco);
+ transition: background 0.2s ease;
+}
+
+.btn-cancelar:hover {
+ background: var(--azul-transparente);
+}
+
+.modal-confirmacion-contenido .btn-eliminar {
+ border-radius: 2rem;
+ padding: 0.9rem 1.8rem;
+}
+
+.btn-detalle {
+font-size: 1.2rem;
+padding: 0.6rem 1.2rem;
+border: none;
+border-radius: 2rem;
+cursor: pointer;
+transition: background 0.2s ease;
+color: var(--blanco);
+background: var(--naranja);
+}
+
 .btn-detalle:hover {
  background: var(--naranja-hover);
  color: var(--blanco);
 }
-
 /* Barra de busqueda */
 .seccion-busqueda {
  max-width: 70rem;
@@ -240,6 +303,48 @@ h2 {
  margin-bottom: 2.5rem;
  border-radius: 2rem;
  display: inline-block;
+}
+
+/* Select de estado de unidad, con color segun el valor */
+.select-estado {
+ font-family: var(--fuente-principal);
+ font-size: 1.3rem;
+ font-weight: bold;
+ padding: 0.6rem 1.2rem;
+ border: none;
+ border-radius: 2rem;
+ cursor: pointer;
+ color: var(--blanco);
+ outline: none;
+ appearance: none;
+ -webkit-appearance: none;
+ background-repeat: no-repeat;
+ background-position: right 1rem center;
+ background-size: 1.2rem;
+ padding-right: 3rem;
+ /* flechita blanca dibujada con SVG, para reemplazar la del navegador */
+ background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M7 10l5 5 5-5z'/></svg>");
+}
+
+.select-estado option {
+ color: var(--negro);
+ background: var(--blanco);
+}
+
+.estado-disponible {
+ background: #2ecc71; /* verde */
+}
+
+.estado-asignado {
+ background: var(--naranja);
+}
+
+.estado-dañado {
+ background: var(--rojo);
+}
+
+.estado-baja {
+ background: #555b70; /* gris azulado, apagado a proposito */
 }
 
 /**responsive tablets*/
@@ -313,7 +418,7 @@ h2 {
         padding: 0.8rem 1.2rem;
     }
 
-    /* los botones de Acciones se apilan en vez de quedar en fila */
+    /* los botones de acciones se apilan en vez de quedar en fila */
     .tabla-inventario td:last-child {
         display: flex;
         flex-direction: column;
@@ -337,4 +442,4 @@ h2 {
     .modal-contenido img {
         max-height: 140px;
     }
-}
+} 

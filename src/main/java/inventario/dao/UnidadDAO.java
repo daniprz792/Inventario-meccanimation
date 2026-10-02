@@ -62,7 +62,7 @@ public class UnidadDAO {
             System.out.println(e.getMessage());
         }
     }
-
+// este lo que hace es eliminar la unidad de la base de datos, no solo cambiar su estado
     public void eliminarUnidad(int idUnidad) {
         String sql = "DELETE FROM unidad WHERE id_unidad = ?";
         try {
@@ -75,7 +75,7 @@ public class UnidadDAO {
             System.out.println(e.getMessage());
         }
     }
-
+// hace un mapeo de los datos de la base de datos a un objeto Unidad
     private Unidad mapearUnidad(ResultSet rs) throws Exception {
         Unidad unidad = new Unidad();
         unidad.setId(rs.getInt("id_unidad"));

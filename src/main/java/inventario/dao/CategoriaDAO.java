@@ -36,7 +36,6 @@ public class CategoriaDAO {
     }
 
     // crea una nueva categoria y devuelve el id generado, o -1 si hubo un error
-
     public int crearCategoria(String nombre) {
         String sql = "INSERT INTO categoria (nombre) VALUES (?)";
         int idGenerado = -1;

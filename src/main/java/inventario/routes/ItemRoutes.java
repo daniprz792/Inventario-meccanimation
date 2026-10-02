@@ -7,6 +7,7 @@ import inventario.dao.ItemDAO;
 import inventario.model.Item;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,8 +18,6 @@ public class ItemRoutes {
     public static void registrar(Javalin app) {
         ItemDAO dao = new ItemDAO();
 
-        // GET /api/items              -> todos los productos activos
-        // GET /api/items?categoria=3  -> solo los productos activos de esa categoria
         app.get("/api/items", ctx -> {
             String categoriaParam = ctx.queryParam("categoria");
             if (categoriaParam != null && !categoriaParam.isBlank()) {
@@ -71,12 +70,13 @@ public class ItemRoutes {
         }
 
         UploadedFile archivo = ctx.uploadedFile("imagen");
+
         if (archivo != null) {
-            try {
+            try (InputStream contenido = archivo.content()) {
                 String nombreArchivo = System.currentTimeMillis() + "_" + archivo.filename();
                 Path destino = Paths.get("uploads/images", nombreArchivo);
                 Files.createDirectories(destino.getParent());
-                Files.copy(archivo.content(), destino, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(contenido, destino, StandardCopyOption.REPLACE_EXISTING);
                 item.setFoto(nombreArchivo);
             } catch (IOException e) {
                 throw new RuntimeException("Error guardando la imagen del producto", e);

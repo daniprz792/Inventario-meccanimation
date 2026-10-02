@@ -2,7 +2,7 @@ package inventario.model;
 
 public class Categoria {
 
-    // atributos de la clase Categoria
+    // atributos de la clase Categoria de la base de datos
 
     private int id;
     private String nombre;
