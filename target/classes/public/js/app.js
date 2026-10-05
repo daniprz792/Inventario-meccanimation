@@ -344,35 +344,46 @@ async function eliminarUnidad(idUnidad, idProducto) {
     await cargarUnidades(idProducto);
 }
 
-cargarItems();
+// navegacion entre vistas
+function cambiarVista(idVista) {
+    const vistaSeleccionada = document.getElementById(idVista);
+    if (!vistaSeleccionada) {
+        throw new Error(`No existe la vista "${idVista}"`);
+    }
 
-// navegacion entre vistas (SPA) 
-
-function cambiarVista(idVista, boton) {
     document.querySelectorAll('.vista').forEach(vista => {
         vista.classList.add('oculto');
     });
-    document.getElementById(idVista).classList.remove('oculto');
+    vistaSeleccionada.classList.remove('oculto');
 
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('activo'));
-    if (boton) boton.classList.add('activo');
+    const btnVolver = document.getElementById('btn-volver-menu');
+    btnVolver.classList.toggle('oculto', idVista === 'vista-menu');
 
-    if (idVista === 'vista-auditoria') {
-        document.getElementById('inputEscaner').focus();
+    if (idVista === 'vista-inventario') {
+        cargarItems();
     }
 }
 
-//  escaner de codigo de barras 
+// inicio de la auditoria de inventario
+let productosParaContar = [];
+let codigosContados = new Set();
 
-const inputEscaner = document.getElementById('inputEscaner');
+async function iniciarInventario() {
+    const respuesta = await fetch('/api/items');
+    if (!respuesta.ok) {
+        throw new Error(`No se pudieron cargar los productos: ${respuesta.status}`);
+    }
+    productosParaContar = await respuesta.json();
+    codigosContados = new Set();
 
-inputEscaner.addEventListener('keyup', (e) => {
-    if (e.key !== 'Enter') return;
+    document.getElementById('btn-iniciar-inventario').classList.add('oculto');
+    document.getElementById('contador-contenedor').classList.remove('oculto');
+    document.getElementById('contador-texto').textContent =
+        `${codigosContados.size} de ${productosParaContar.length} productos`;
 
-    e.preventDefault();
-
-    const codigoEscaneado = inputEscaner.value.trim();
-    console.log('Código escaneado:', codigoEscaneado);
-
+    const inputEscaner = document.getElementById('inputEscaner');
     inputEscaner.value = '';
-});
+    inputEscaner.focus();
+}
+
+cambiarVista('vista-menu');

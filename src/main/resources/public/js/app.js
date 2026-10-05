@@ -344,4 +344,46 @@ async function eliminarUnidad(idUnidad, idProducto) {
     await cargarUnidades(idProducto);
 }
 
-cargarItems();
+// navegacion entre vistas
+function cambiarVista(idVista) {
+    const vistaSeleccionada = document.getElementById(idVista);
+    if (!vistaSeleccionada) {
+        throw new Error(`No existe la vista "${idVista}"`);
+    }
+
+    document.querySelectorAll('.vista').forEach(vista => {
+        vista.classList.add('oculto');
+    });
+    vistaSeleccionada.classList.remove('oculto');
+
+    const btnVolver = document.getElementById('btn-volver-menu');
+    btnVolver.classList.toggle('oculto', idVista === 'vista-menu');
+
+    if (idVista === 'vista-inventario') {
+        cargarItems();
+    }
+}
+
+// inicio de la auditoria de inventario
+let productosParaContar = [];
+let codigosContados = new Set();
+
+async function iniciarInventario() {
+    const respuesta = await fetch('/api/items');
+    if (!respuesta.ok) {
+        throw new Error(`No se pudieron cargar los productos: ${respuesta.status}`);
+    }
+    productosParaContar = await respuesta.json();
+    codigosContados = new Set();
+
+    document.getElementById('btn-iniciar-inventario').classList.add('oculto');
+    document.getElementById('contador-contenedor').classList.remove('oculto');
+    document.getElementById('contador-texto').textContent =
+        `${codigosContados.size} de ${productosParaContar.length} productos`;
+
+    const inputEscaner = document.getElementById('inputEscaner');
+    inputEscaner.value = '';
+    inputEscaner.focus();
+}
+
+cambiarVista('vista-menu');

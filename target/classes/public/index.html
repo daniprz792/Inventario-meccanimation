@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario Meccanimation</title>
 
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/normalize.css">
 </head>
@@ -16,17 +17,24 @@
         <h1>Inventario Meccanimation</h1>
     </header>
 
-    <nav class="menu-navegacion">
-    <button class="nav-btn" onclick="cambiarVista('vista-inventario', this)"> Ver Inventario</button>
-    <button class="nav-btn" onclick="cambiarVista('vista-auditoria', this)"> Hacer Inventario</button>
-    </nav>
+    <!-- menu de inicio -->
+<div id="vista-menu" class="vista">
+    <h2>¿Qué vamos a hacer?</h2>
+    <div class="menu-opciones">
+        <button class="nav-btn" onclick="cambiarVista('vista-inventario')"> Ver Inventario</button>
+        <button class="nav-btn" onclick="cambiarVista('vista-auditoria')"> Hacer Inventario</button>
+    </div>
+</div>
+
+<!-- botón para volver al menú, visible dentro de las otras vistas -->
+<button id="btn-volver-menu" class="btn-volver oculto" onclick="cambiarVista('vista-menu')"> Menú</button>
 
     <div class="seccion-logo">
         <img src="css/img/favicon.png" alt="logo">
     </div>
 
 
- <div id=" vista-inventario" class="vista">
+ <div id="vista-inventario" class="vista oculto">
 
     <div class="seccion-acciones">
         <button id="btn-abrir-modal" class="btn-guardar">+ Agregar Producto</button>
@@ -50,6 +58,7 @@
                     <th>Observaciones</th>
                     <th>Fecha de compra</th>
                     <th>Acciones</th>
+                
                 </tr>
             </thead>
             <tbody id="tabla-items"></tbody>
@@ -57,12 +66,20 @@
     </div>
  </div>
 
- <div id="vista-auditoria" class="vista oculto">
-    <h2>Hacer Inventario</h2>
-    <p>escanea el código de barras de cada producto para verificar su existencia en el sistema</p>
+<div id="vista-auditoria" class="vista oculto">
+    <h2>Auditoría de Inventario</h2>
+    <p>Presiona "Iniciar Inventario" y escanea cada producto para contarlo.</p>
 
-    <div class="escaner-contenedor">
-        <input type="text" id="inputEscaner" placeholder="escanea el codigo o escribe el codigo de barras aqui" autofocus>
+    <button id="btn-iniciar-inventario" class="btn-guardar" onclick="iniciarInventario()">Iniciar Inventario</button>
+
+    <div id="contador-contenedor" class="oculto">
+        <p id="contador-texto" class="contador-texto">0 de 0 productos</p>
+
+        <div class="escaner-contenedor">
+            <input type="text" id="inputEscaner" placeholder="Escanea el código de barras aquí...">
+        </div>
+
+        <p id="escaner-mensaje" class="escaner-mensaje"></p>
     </div>
 </div>
 

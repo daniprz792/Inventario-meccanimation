@@ -427,6 +427,75 @@ background: var(--naranja);
     box-shadow: 0 0 0 0.4rem rgba(253, 114, 29, 0.25);
 }
 
+/*me */
+
+/* Menu de inicio */
+#vista-menu {
+    max-width: 60rem;
+    margin: 4rem auto;
+    text-align: center;
+}
+
+.menu-opciones {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.menu-opciones .nav-btn {
+    font-size: 1.8rem;
+    padding: 2rem 3rem;
+}
+
+.btn-volver {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    font-family: var(--fuente-principal);
+    font-size: 1.3rem;
+    font-weight: bold;
+    padding: 0.8rem 1.6rem;
+    border: 2px solid var(--naranja);
+    border-radius: 2rem;
+    cursor: pointer;
+    background: var(--azul-oscuro);
+    color: var(--blanco);
+    z-index: 50;
+}
+
+.btn-volver:hover {
+    background: var(--naranja);
+}
+
+/* Contador de auditoria */
+.contador-texto {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--naranja);
+    margin: 3rem 0 1rem;
+}
+
+.escaner-mensaje {
+    font-size: 1.4rem;
+    margin-top: 1.5rem;
+    min-height: 2.2rem;
+}
+
+.escaner-mensaje.ok {
+    color: #2ecc71;
+}
+
+.escaner-mensaje.error {
+    color: var(--rojo);
+}
+
+.escaner-mensaje.repetido {
+    color: var(--naranja);
+}
+
+
+
 /**responsive tablets*/
 @media (max-width: 768px) {
 
