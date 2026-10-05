@@ -53,14 +53,11 @@ public class ItemRoutes {
         Item item = new Item();
         item.setCodigoInventario(ctx.formParam("codigoInventario"));
         item.setIdCategoria(Integer.parseInt(ctx.formParam("idCategoria")));
-        item.setRequiereUnidades("true".equals(ctx.formParam("requiereUnidades"))
-                || "on".equals(ctx.formParam("requiereUnidades")));
         item.setNombre(ctx.formParam("nombre"));
         item.setMarca(ctx.formParam("marca"));
         item.setModelo(ctx.formParam("modelo"));
         item.setDescripcion(ctx.formParam("descripcion"));
         item.setPrecioUnitario(Double.parseDouble(ctx.formParam("precioUnitario")));
-        item.setCantidadExistencias(Integer.parseInt(ctx.formParam("cantidadExistencias")));
         item.setFechaCompra(ctx.formParam("fechaCompra"));
         item.setNotas(ctx.formParam("notas"));
 

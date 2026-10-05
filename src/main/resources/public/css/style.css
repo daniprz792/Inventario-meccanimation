@@ -206,6 +206,20 @@ h2 {
  margin: 1rem auto;
  border-radius: 0.5rem;
 }
+#modal-detalle .modal-imagen-contenido {
+ width: auto;
+ max-width: 90vw;
+ max-height: 90vh;
+ padding: 3.5rem 2rem 2rem;
+ overflow: visible;
+}
+#modal-detalle .modal-imagen-contenido img {
+ display: block;
+ max-width: calc(90vw - 4rem);
+ max-height: calc(90vh - 6rem);
+ margin: 0 auto;
+ object-fit: contain;
+}
 .modal-cerrar {
  position: absolute;
  top: 1rem; right: 1.5rem;
@@ -244,7 +258,6 @@ h2 {
  cursor: pointer;
  background: transparent;
  color: var(--blanco);
- transition: background 0.2s ease;
 }
 
 .btn-cancelar:hover {
@@ -345,6 +358,73 @@ background: var(--naranja);
 
 .estado-baja {
  background: #555b70; /* gris azulado, apagado a proposito */
+}
+
+.oculto {
+    display: none;
+}
+
+.menu-navegacion {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 2rem 0 1rem;
+    background: var(--azul-oscuro);
+}
+
+.nav-btn {
+    font-family: var(--fuente-principal);
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 1rem 2rem;
+    border: 2px solid transparent;
+    border-radius: 2rem;
+    cursor: pointer;
+    background: var(--azul-claro);
+    color: var(--blanco);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.nav-btn:hover {
+    border-color: var(--naranja);
+}
+
+.nav-btn.activo {
+    border-color: var(--naranja);
+    background: var(--naranja);
+}
+
+#vista-auditoria {
+    max-width: 60rem;
+    margin: 5rem auto;
+    text-align: center;
+}
+
+.escaner-contenedor {
+    margin-top: 3rem;
+}
+
+#inputEscaner {
+    width: 100%;
+    font-family: var(--fuente-principal);
+    font-size: 2rem;
+    text-align: center;
+    padding: 2rem;
+    border: 3px solid var(--naranja);
+    border-radius: 1.5rem;
+    background: var(--azul-claro);
+    color: var(--blanco);
+    outline: none;
+}
+
+#inputEscaner::placeholder {
+    color: var(--gris);
+    opacity: 0.6;
+}
+
+#inputEscaner:focus {
+    border-color: var(--naranja-hover);
+    box-shadow: 0 0 0 0.4rem rgba(253, 114, 29, 0.25);
 }
 
 /**responsive tablets*/

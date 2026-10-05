@@ -149,20 +149,20 @@ async function cargarItems() {
     items.forEach(item => {
         const fila = document.createElement('tr');
 
-        const botonUnidades = item.requiereUnidades
+        /*const botonUnidades = item.requiereUnidades
             ? `<button class="btn-detalle" onclick="abrirUnidades(${item.id}, '${item.nombre}')">Ver unidades</button>`
-            : `<span style="opacity:.5">N/A</span>`;
+            : `<span style="opacity:.5">N/A</span>`;*/
 
         fila.innerHTML = `
             <td>${item.codigoInventario}</td>
             <td>${item.nombreCategoria}</td>
             <td>${item.nombre}</td>
             <td>$${item.precioUnitario.toLocaleString()}</td>
-            <td>${item.cantidadExistencias}</td>
-            <td>$${item.valorInventario.toLocaleString()}</td>
-            <td>${botonUnidades}</td>
+            <td>${item.descripcion || 'Sin descripción'}</td>
+            <td>${item.notas || 'Sin observaciones'}</td>
+            <td>${item.fechaCompra || 'No registrada'}</td>
             <td>
-                <button class="btn-detalle" onclick='verDetalle(${JSON.stringify(item)})'>Detalle</button>
+                <button class="btn-detalle" onclick='verDetalle(${JSON.stringify(item)})'>Ver imagen</button>
                 <button class="btn-editar" onclick='editarItem(${JSON.stringify(item)})'>Editar</button>
                 <button class="btn-eliminar" onclick="eliminarItem(${item.id})">Eliminar</button>
             </td>
@@ -181,10 +181,8 @@ async function editarItem(item) {
     document.getElementById('modelo').value = item.modelo ?? '';
     document.getElementById('descripcion').value = item.descripcion ?? '';
     document.getElementById('precioUnitario').value = item.precioUnitario;
-    document.getElementById('cantidadExistencias').value = item.cantidadExistencias;
     document.getElementById('fechaCompra').value = item.fechaCompra ?? '';
     document.getElementById('notas').value = item.notas ?? '';
-    document.getElementById('requiereUnidades').checked = !!item.requiereUnidades;
 
     await cargarCategorias(item.idCategoria);
 
@@ -204,16 +202,12 @@ async function eliminarItem(id) {
 }
 
 function verDetalle(item) {
-    document.getElementById('detalle-nombre').textContent = item.nombre;
-    document.getElementById('detalle-descripcion').textContent = item.descripcion || 'Sin descripción';
-    document.getElementById('detalle-observaciones').textContent = item.notas || 'Sin notas';
-    document.getElementById('detalle-fecha').textContent = item.fechaCompra || 'No registrada';
-
     const img = document.getElementById('detalle-imagen');
     if (item.foto) {
         img.src = '/images/' + item.foto;
         img.style.display = 'block';
     } else {
+        img.removeAttribute('src');
         img.style.display = 'none';
     }
 
@@ -237,10 +231,8 @@ document.getElementById('form-item').addEventListener('submit', async (e) => {
     datos.append('modelo', document.getElementById('modelo').value);
     datos.append('descripcion', document.getElementById('descripcion').value);
     datos.append('precioUnitario', document.getElementById('precioUnitario').value);
-    datos.append('cantidadExistencias', document.getElementById('cantidadExistencias').value);
     datos.append('fechaCompra', document.getElementById('fechaCompra').value);
     datos.append('notas', document.getElementById('notas').value);
-    datos.append('requiereUnidades', document.getElementById('requiereUnidades').checked ? 'true' : 'false');
 
     const archivoImagen = document.getElementById('imagenProducto').files[0];
     if (archivoImagen) {

@@ -16,9 +16,17 @@
         <h1>Inventario Meccanimation</h1>
     </header>
 
+    <nav class="menu-navegacion">
+    <button class="nav-btn" onclick="cambiarVista('vista-inventario', this)"> Ver Inventario</button>
+    <button class="nav-btn" onclick="cambiarVista('vista-auditoria', this)"> Hacer Inventario</button>
+    </nav>
+
     <div class="seccion-logo">
         <img src="css/img/favicon.png" alt="logo">
     </div>
+
+
+ <div id=" vista-inventario" class="vista">
 
     <div class="seccion-acciones">
         <button id="btn-abrir-modal" class="btn-guardar">+ Agregar Producto</button>
@@ -34,19 +42,29 @@
         <table class="tabla-inventario">
             <thead>
                 <tr>
-                    <th>Código</th>
+                    <th>Codigo</th>
                     <th>Categoria</th>
                     <th>Nombre</th>
                     <th>Precio</th>
-                    <th>Cantidad</th>
-                    <th>Valor total</th>
-                    <th>Unidades</th>
+                    <th>Descripcion</th>
+                    <th>Observaciones</th>
+                    <th>Fecha de compra</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tabla-items"></tbody>
         </table>
     </div>
+ </div>
+
+ <div id="vista-auditoria" class="vista oculto">
+    <h2>Hacer Inventario</h2>
+    <p>escanea el código de barras de cada producto para verificar su existencia en el sistema</p>
+
+    <div class="escaner-contenedor">
+        <input type="text" id="inputEscaner" placeholder="escanea el codigo o escribe el codigo de barras aqui" autofocus>
+    </div>
+</div>
 
     <!-- modal con el formulario de agregar/editar producto -->
     <div id="modal-form" class="modal oculto">
@@ -92,17 +110,6 @@
                     <input type="number" min="0" id="precioUnitario" step="0.01" required>
                 </div>
 
-                <div class="campo">
-                    <label>Cantidad:</label>
-                    <input type="number" min="1" id="cantidadExistencias" required>
-                </div>
-
-                <div class="campo campo-checkbox">
-                    <label>
-                        <input type="checkbox" id="requiereUnidades">
-                        ¿Requiere unidades individuales? (ej: número de serie por unidad)
-                    </label>
-                </div>
 
                 <div class="campo">
                     <label>Fecha de compra:</label>
@@ -124,15 +131,11 @@
         </div>
     </div>
 
-    <!-- modal con el detalle del producto -->
+    <!-- modal para ver la imagen del producto -->
     <div id="modal-detalle" class="modal oculto">
-        <div class="modal-contenido">
+        <div class="modal-contenido modal-imagen-contenido">
             <button class="modal-cerrar" onclick="cerrarDetalle()">&times;</button>
-            <h3 id="detalle-nombre"></h3>
             <img id="detalle-imagen" src="" alt="Imagen del producto">
-            <p><strong>Descripcion:</strong> <span id="detalle-descripcion"></span></p>
-            <p><strong>Observaciones:</strong> <span id="detalle-observaciones"></span></p>
-            <p><strong>Fecha ingreso:</strong> <span id="detalle-fecha"></span></p>
         </div>
     </div>
 
