@@ -1,3 +1,4 @@
+/* variables globales */
 :root {
  --blanco: #FFFFFF;
  --gris: #EEE;
@@ -11,6 +12,8 @@
  --rojo: #E74C3C;
  --rojo-hover: #C0392B;
 }
+
+/* base y reset */
 html {
  box-sizing: border-box;
  font-size: 62.5%;
@@ -37,24 +40,87 @@ h2 {
  text-align: center;
 }
 
-/*logo */
-.seccion-logo {
- margin: 2rem 0;
-}
-
-.seccion-logo img {
- width: 8rem; /* ajusta este valor al tamaño que quieras */
- height: auto; /* mantiene la proporción, para que no se deforme */
-}
-
-/* Cabecera */
+/* cabecera */
 .cabecera h1 {
  font-size: 4.8rem;
  padding-top: 3rem;
  margin-bottom: 0.5rem;
 }
 
-/* Seccion del formulario */
+/* logo */
+.seccion-logo {
+ margin: 2rem 0;
+}
+.seccion-logo img {
+ width: 8rem;
+ height: auto;
+}
+
+/* menu de navegacion (SPA) */
+.menu-navegacion {
+ display: flex;
+ justify-content: center;
+ gap: 1.5rem;
+ padding: 2rem 0 1rem;
+ background: var(--azul-oscuro);
+}
+.nav-btn {
+ font-family: var(--fuente-principal);
+ font-size: 1.5rem;
+ font-weight: bold;
+ padding: 1rem 2rem;
+ border: 2px solid transparent;
+ border-radius: 2rem;
+ cursor: pointer;
+ background: var(--azul-claro);
+ color: var(--blanco);
+ transition: border-color 0.2s ease, background 0.2s ease;
+}
+.nav-btn:hover {
+ border-color: var(--naranja);
+}
+.nav-btn.activo {
+ border-color: var(--naranja);
+ background: var(--naranja);
+}
+
+/* menu de inicio */
+#vista-menu {
+ max-width: 60rem;
+ margin: 4rem auto;
+ text-align: center;
+}
+.menu-opciones {
+ display: flex;
+ justify-content: center;
+ gap: 2rem;
+ margin-top: 3rem;
+}
+.menu-opciones .nav-btn {
+ font-size: 1.8rem;
+ padding: 2rem 3rem;
+}
+
+.btn-volver {
+ position: fixed;
+ top: 2rem;
+ left: 2rem;
+ font-family: var(--fuente-principal);
+ font-size: 1.3rem;
+ font-weight: bold;
+ padding: 0.8rem 1.6rem;
+ border: 2px solid var(--naranja);
+ border-radius: 2rem;
+ cursor: pointer;
+ background: var(--azul-oscuro);
+ color: var(--blanco);
+ z-index: 50;
+}
+.btn-volver:hover {
+ background: var(--naranja);
+}
+
+/* seccion del formulario */
 .seccion-formulario {
  margin: 0 2rem;
 }
@@ -71,7 +137,6 @@ h2 {
  flex-direction: column;
  text-align: left;
 }
-
 .campo label {
  font-size: 1.3rem;
  margin-bottom: 0.4rem;
@@ -86,7 +151,17 @@ h2 {
  min-width: 14rem;
 }
 
-/*i*/
+/* modal de unidades: separa el input y el boton de la tabla de abajo */
+#form-unidad .campo {
+ margin-bottom: 1.5rem;
+}
+#form-unidad .btn-guardar {
+ margin-bottom: 2.5rem;
+ border-radius: 2rem;
+ display: inline-block;
+}
+
+/* botones */
 .btn-guardar {
  font-family: var(--fuente-principal);
  font-size: 1.4rem;
@@ -101,38 +176,9 @@ h2 {
  background: var(--naranja-hover);
 }
 
-/* seccion tabla */
-.seccion-tabla {
- margin: 0 0 0;
-}
-.tabla-inventario {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--azul-claro);
-    border-radius: 2rem;
-    overflow: hidden;
-}
-.tabla-inventario th,
-.tabla-inventario td {
-    padding: 1.2rem 1.5rem;
-    text-align: left
-}
-.tabla-inventario th {
-    background-color: var(--naranja);
-    color: var(--blanco);
-    font-size: 1.4rem;
-    text-transform: uppercase;
-}
-.tabla-inventario tbody tr:hover {
- background: var(--azul-transparente);
-}
-.tabla-inventario tbody tr:last-child td {
- border-bottom: none;
-}
-
-/* botones de acciones */
 .btn-editar,
-.btn-eliminar {
+.btn-eliminar,
+.btn-detalle {
  font-size: 1.2rem;
  padding: 0.6rem 1.2rem;
  border: none;
@@ -140,6 +186,7 @@ h2 {
  cursor: pointer;
  transition: background 0.2s ease;
 }
+
 /* boton de editar */
 .btn-editar {
  background: var(--naranja);
@@ -148,13 +195,129 @@ h2 {
 .btn-editar:hover {
  background: var(--naranja-hover);
 }
+
 /* boton de eliminar */
 .btn-eliminar {
  background: var(--rojo);
  color: var(--blanco);
 }
 .btn-eliminar:hover {
- background: var(--rojo-hover)
+ background: var(--rojo-hover);
+}
+
+/* boton de detalle */
+.btn-detalle {
+ color: var(--blanco);
+ background: var(--naranja);
+}
+.btn-detalle:hover {
+ background: var(--naranja-hover);
+ color: var(--blanco);
+}
+
+.btn-cancelar {
+ font-family: var(--fuente-principal);
+ font-size: 1.4rem;
+ font-weight: bold;
+ padding: 0.9rem 1.8rem;
+ border: 2px solid var(--gris);
+ border-radius: 2rem;
+ cursor: pointer;
+ background: transparent;
+ color: var(--blanco);
+}
+.btn-cancelar:hover {
+ background: var(--azul-transparente);
+}
+
+/* barra de busqueda */
+.seccion-busqueda {
+ max-width: 70rem;
+ margin: 2rem auto 2.5rem;
+}
+.seccion-busqueda input {
+ width: 100%;
+ font-family: var(--fuente-principal);
+ font-size: 1.4rem;
+ padding: 1rem 1.5rem;
+ background: var(--azul-claro);
+ color: var(--blanco);
+ border: 2px solid var(--naranja);
+ border-radius: 2rem;
+ outline: none;
+}
+.seccion-busqueda input::placeholder {
+ color: var(--gris);
+ opacity: 0.6;
+}
+.seccion-busqueda input:focus {
+ border-color: var(--naranja-hover);
+}
+
+/* seccion tabla */
+.seccion-tabla {
+ margin: 0 0 0;
+}
+.tabla-inventario {
+ width: 100%;
+ border-collapse: collapse;
+ background: var(--azul-claro);
+ border-radius: 2rem;
+ overflow: hidden;
+}
+.tabla-inventario th,
+.tabla-inventario td {
+ padding: 1.2rem 1.5rem;
+ text-align: left;
+}
+.tabla-inventario th {
+ background-color: var(--naranja);
+ color: var(--blanco);
+ font-size: 1.4rem;
+ text-transform: uppercase;
+}
+.tabla-inventario tbody tr:hover {
+ background: var(--azul-transparente);
+}
+.tabla-inventario tbody tr:last-child td {
+ border-bottom: none;
+}
+
+/* select de estado de unidad, con color segun el valor */
+.select-estado {
+ font-family: var(--fuente-principal);
+ font-size: 1.3rem;
+ font-weight: bold;
+ padding: 0.6rem 1.2rem;
+ border: none;
+ border-radius: 2rem;
+ cursor: pointer;
+ color: var(--blanco);
+ outline: none;
+ appearance: none;
+ -webkit-appearance: none;
+ background-repeat: no-repeat;
+ background-position: right 1rem center;
+ background-size: 1.2rem;
+ padding-right: 3rem;
+ /* flechita blanca dibujada con SVG, para reemplazar la del navegador */
+ background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M7 10l5 5 5-5z'/></svg>");
+}
+.select-estado option {
+ color: var(--negro);
+ background: var(--blanco);
+}
+.estado-disponible {
+ background: #2ecc71; /* verde */
+}
+.estado-asignado {
+ background: var(--naranja);
+}
+.estado-dañado {
+ background: var(--rojo);
+}
+.estado-baja {
+ background: #555b70; /* gris azulado, apagado a proposito */
 }
 
 /* modal del detalle */
@@ -180,23 +343,8 @@ h2 {
  text-align: left;
  position: relative;
  max-height: 85vh;
- overflow-y: auto; /* por si el contenido es mas alto q la pantalla */
+ overflow-y: auto; /* por si el contenido es mas alto que la pantalla */
 }
-
-/*modales tablas */
-
-#modal-unidades .unidades-tabla{
- max-height: 40vh;
- overflow-y: auto;
- border-radius: 2rem;
-}
-
-#modal-unidades .tabla-inventario thead th {
- position: sticky;
- top: 0;
- z-index: 1;
-}
-
 .modal-contenido h3 {
  color: var(--naranja);
  margin-top: 0;
@@ -206,6 +354,18 @@ h2 {
  margin: 1rem auto;
  border-radius: 0.5rem;
 }
+.modal-cerrar {
+ position: absolute;
+ top: 1rem; right: 1.5rem;
+ background: transparent;
+ color: var(--blanco);
+ font-size: 2.4rem;
+ border: none;
+ cursor: pointer;
+ padding: 0;
+}
+
+/* modal: ver imagen del producto */
 #modal-detalle .modal-imagen-contenido {
  width: auto;
  max-width: 90vw;
@@ -220,422 +380,229 @@ h2 {
  margin: 0 auto;
  object-fit: contain;
 }
-.modal-cerrar {
- position: absolute;
- top: 1rem; right: 1.5rem;
- background: transparent;
- color: var(--blanco);
- font-size: 2.4rem;
- border: none;
- cursor: pointer;
- padding: 0;
+
+/* modal: unidades individuales, tabla con scroll propio */
+#modal-unidades .unidades-tabla {
+ max-height: 40vh;
+ overflow-y: auto;
+ border-radius: 2rem;
+}
+#modal-unidades .tabla-inventario thead th {
+ position: sticky;
+ top: 0;
+ z-index: 1;
 }
 
-/* Modal de confirmacion */
+/* modal de confirmacion */
 .modal-confirmacion-contenido {
  max-width: 380px;
  text-align: center;
 }
-
 .modal-confirmacion-contenido p {
  font-size: 1.6rem;
  margin: 0 0 2rem;
 }
-
+.modal-confirmacion-contenido .btn-eliminar {
+ border-radius: 2rem;
+ padding: 0.9rem 1.8rem;
+}
 .confirmacion-botones {
  display: flex;
  gap: 1.5rem;
  justify-content: center;
 }
 
-.btn-cancelar {
- font-family: var(--fuente-principal);
- font-size: 1.4rem;
- font-weight: bold;
- padding: 0.9rem 1.8rem;
- border: 2px solid var(--gris);
- border-radius: 2rem;
- cursor: pointer;
- background: transparent;
- color: var(--blanco);
+/* modal: resumen de auditoria */
+#resumen-faltantes-contenedor h4 {
+ color: var(--naranja);
+ margin-bottom: 0.8rem;
+}
+#resumen-lista-faltantes {
+ max-height: 20rem;
+ overflow-y: auto;
+ margin: 0 0 2rem;
+ padding-left: 2rem;
+}
+#resumen-lista-faltantes li {
+ margin-bottom: 0.5rem;
 }
 
-.btn-cancelar:hover {
- background: var(--azul-transparente);
+/* auditoria de inventario (escaner) */
+#vista-auditoria {
+ max-width: 60rem;
+ margin: 5rem auto;
+ text-align: center;
 }
-
-.modal-confirmacion-contenido .btn-eliminar {
- border-radius: 2rem;
- padding: 0.9rem 1.8rem;
+.escaner-contenedor {
+ margin-top: 3rem;
 }
-
-.btn-detalle {
-font-size: 1.2rem;
-padding: 0.6rem 1.2rem;
-border: none;
-border-radius: 2rem;
-cursor: pointer;
-transition: background 0.2s ease;
-color: var(--blanco);
-background: var(--naranja);
-}
-
-.btn-detalle:hover {
- background: var(--naranja-hover);
- color: var(--blanco);
-}
-/* Barra de busqueda */
-.seccion-busqueda {
- max-width: 70rem;
- margin: 2rem auto 2.5rem;
-}
-.seccion-busqueda input {
+#inputEscaner {
  width: 100%;
  font-family: var(--fuente-principal);
- font-size: 1.4rem;
- padding: 1rem 1.5rem;
+ font-size: 2rem;
+ text-align: center;
+ padding: 2rem;
+ border: 3px solid var(--naranja);
+ border-radius: 1.5rem;
  background: var(--azul-claro);
  color: var(--blanco);
- border: 2px solid var(--naranja);
- border-radius: 2rem;
  outline: none;
 }
-.seccion-busqueda input::placeholder {
+#inputEscaner::placeholder {
  color: var(--gris);
  opacity: 0.6;
 }
-.seccion-busqueda input:focus {
- border-color: var(--naranja-hover);
-}
-/* Modal de unidades */
-#form-unidad .campo {
- margin-bottom: 1.5rem;
-}
-
-#form-unidad .btn-guardar {
- margin-bottom: 2.5rem;
- border-radius: 2rem;
- display: inline-block;
-}
-
-/* Select de estado de unidad, con color segun el valor */
-.select-estado {
- font-family: var(--fuente-principal);
- font-size: 1.3rem;
- font-weight: bold;
- padding: 0.6rem 1.2rem;
- border: none;
- border-radius: 2rem;
- cursor: pointer;
- color: var(--blanco);
- outline: none;
- appearance: none;
- -webkit-appearance: none;
- background-repeat: no-repeat;
- background-position: right 1rem center;
- background-size: 1.2rem;
- padding-right: 3rem;
- /* flechita blanca dibujada con SVG, para reemplazar la del navegador */
- background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M7 10l5 5 5-5z'/></svg>");
-}
-
-.select-estado option {
- color: var(--negro);
- background: var(--blanco);
-}
-
-.estado-disponible {
- background: #2ecc71; /* verde */
-}
-
-.estado-asignado {
- background: var(--naranja);
-}
-
-.estado-dañado {
- background: var(--rojo);
-}
-
-.estado-baja {
- background: #555b70; /* gris azulado, apagado a proposito */
-}
-
-.oculto {
-    display: none;
-}
-
-.menu-navegacion {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    padding: 2rem 0 1rem;
-    background: var(--azul-oscuro);
-}
-
-.nav-btn {
-    font-family: var(--fuente-principal);
-    font-size: 1.5rem;
-    font-weight: bold;
-    padding: 1rem 2rem;
-    border: 2px solid transparent;
-    border-radius: 2rem;
-    cursor: pointer;
-    background: var(--azul-claro);
-    color: var(--blanco);
-    transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-.nav-btn:hover {
-    border-color: var(--naranja);
-}
-
-.nav-btn.activo {
-    border-color: var(--naranja);
-    background: var(--naranja);
-}
-
-#vista-auditoria {
-    max-width: 60rem;
-    margin: 5rem auto;
-    text-align: center;
-}
-
-.escaner-contenedor {
-    margin-top: 3rem;
-}
-
-#inputEscaner {
-    width: 100%;
-    font-family: var(--fuente-principal);
-    font-size: 2rem;
-    text-align: center;
-    padding: 2rem;
-    border: 3px solid var(--naranja);
-    border-radius: 1.5rem;
-    background: var(--azul-claro);
-    color: var(--blanco);
-    outline: none;
-}
-
-#inputEscaner::placeholder {
-    color: var(--gris);
-    opacity: 0.6;
-}
-
 #inputEscaner:focus {
-    border-color: var(--naranja-hover);
-    box-shadow: 0 0 0 0.4rem rgba(253, 114, 29, 0.25);
+ border-color: var(--naranja-hover);
+ box-shadow: 0 0 0 0.4rem rgba(253, 114, 29, 0.25);
 }
 
-/*me */
-
-/* Menu de inicio */
-#vista-menu {
-    max-width: 60rem;
-    margin: 4rem auto;
-    text-align: center;
-}
-
-.menu-opciones {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.menu-opciones .nav-btn {
-    font-size: 1.8rem;
-    padding: 2rem 3rem;
-}
-
-.btn-volver {
-    position: fixed;
-    top: 2rem;
-    left: 2rem;
-    font-family: var(--fuente-principal);
-    font-size: 1.3rem;
-    font-weight: bold;
-    padding: 0.8rem 1.6rem;
-    border: 2px solid var(--naranja);
-    border-radius: 2rem;
-    cursor: pointer;
-    background: var(--azul-oscuro);
-    color: var(--blanco);
-    z-index: 50;
-}
-
-.btn-volver:hover {
-    background: var(--naranja);
-}
-
-/* Contador de auditoria */
 .contador-texto {
-    font-size: 3rem;
-    font-weight: bold;
-    color: var(--naranja);
-    margin: 3rem 0 1rem;
+ font-size: 3rem;
+ font-weight: bold;
+ color: var(--naranja);
+ margin: 3rem 0 1rem;
 }
 
 .escaner-mensaje {
-    font-size: 1.4rem;
-    margin-top: 1.5rem;
-    min-height: 2.2rem;
+ font-size: 1.4rem;
+ margin-top: 1.5rem;
+ min-height: 2.2rem;
 }
-
 .escaner-mensaje.ok {
-    color: #2ecc71;
+ color: #2ecc71;
 }
-
 .escaner-mensaje.error {
-    color: var(--rojo);
+ color: var(--rojo);
 }
-
 .escaner-mensaje.repetido {
-    color: var(--naranja);
+ color: var(--naranja);
 }
-
 
 .auditoria-resultados {
-    display: flex;
-    gap: 2rem;
-    margin-top: 3rem;
-    text-align: left;
+ display: flex;
+ gap: 2rem;
+ margin-top: 3rem;
+ text-align: left;
 }
-
 .auditoria-columna {
-    flex: 1;
-    min-width: 0;
+ flex: 1;
+ min-width: 0;
 }
-
 .auditoria-columna h3 {
-    color: var(--naranja);
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
+ color: var(--naranja);
+ font-size: 1.6rem;
+ margin-bottom: 1rem;
 }
-
 .auditoria-tabla-wrap {
-    max-height: 35rem;
-    overflow-y: auto;
-    border-radius: 1.5rem;
+ max-height: 35rem;
+ overflow-y: auto;
+ border-radius: 1.5rem;
 }
 
-@media (max-width: 768px) {
-    .auditoria-resultados {
-        flex-direction: column;
-    }
+/* utilidades */
+.oculto {
+ display: none;
 }
 
-/*escanear*/
-.escaner-mensaje {
-    font-size: 1.4rem;
-    margin-top: 1.5rem;
-    min-height: 2.2rem;
-}
-
-.escaner-mensaje.ok {
-    color: #2ecc71;
-}
-
-.escaner-mensaje.error {
-    color: var(--rojo);
-}
-
-.escaner-mensaje.repetido {
-    color: var(--naranja);
-}
-/**responsive tablets*/
+/* responsive tablets */
 @media (max-width: 768px) {
 
-    body {
-        padding: 0 1rem 3rem;
-    }
+ body {
+ padding: 0 1rem 3rem;
+ }
 
-    .cabecera h1 {
-        font-size: 3.2rem;
-        padding-top: 2rem;
-    }
+ .cabecera h1 {
+ font-size: 3.2rem;
+ padding-top: 2rem;
+ }
 
-    h2 {
-        font-size: 2.4rem;
-    }
+ h2 {
+ font-size: 2.4rem;
+ }
 
-    .seccion-logo img {
-        max-width: 8rem;
-    }
+ .seccion-logo img {
+ max-width: 8rem;
+ }
 
-    /* la tabla se desborda en horizontal en vez de aplastar columnas */
-    .seccion-tabla {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
+ /* la tabla se desborda en horizontal en vez de aplastar columnas */
+ .seccion-tabla {
+ overflow-x: auto;
+ -webkit-overflow-scrolling: touch;
+ }
 
-    .tabla-inventario {
-        min-width: 70rem; /* fuerza el scroll en vez de comprimir el contenido */
-    }
+ .tabla-inventario {
+ min-width: 70rem; /* fuerza el scroll en vez de comprimir el contenido */
+ }
 
-    .tabla-inventario th,
-    .tabla-inventario td {
-        padding: 1rem;
-        font-size: 1.3rem;
-    }
+ .tabla-inventario th,
+ .tabla-inventario td {
+ padding: 1rem;
+ font-size: 1.3rem;
+ }
 
-    /* el formulario de producto pasa de fila a columna */
-    .seccion-formulario form,
-    #form-item {
-        flex-direction: column;
-        align-items: stretch;
-    }
+ /* el formulario de producto pasa de fila a columna */
+ .seccion-formulario form,
+ #form-item {
+ flex-direction: column;
+ align-items: stretch;
+ }
 
-    .campo input,
-    .campo select {
-        min-width: 0;
-        width: 100%;
-    }
+ .campo input,
+ .campo select {
+ min-width: 0;
+ width: 100%;
+ }
 
-    .modal-contenido {
-        max-width: 90%;
-        padding: 2rem;
-    }
+ .modal-contenido {
+ max-width: 90%;
+ padding: 2rem;
+ }
+
+ /* la auditoria pasa de 2 columnas a 1 */
+ .auditoria-resultados {
+ flex-direction: column;
+ }
 }
 
-/*responsive*/
+/* responsive celulares */
 @media (max-width: 480px) {
 
-    .cabecera h1 {
-        font-size: 2.4rem;
-    }
+ .cabecera h1 {
+ font-size: 2.4rem;
+ }
 
-    .btn-guardar {
-        width: 100%;
-    }
+ .btn-guardar {
+ width: 100%;
+ }
 
-    .seccion-busqueda input {
-        font-size: 1.3rem;
-        padding: 0.8rem 1.2rem;
-    }
+ .seccion-busqueda input {
+ font-size: 1.3rem;
+ padding: 0.8rem 1.2rem;
+ }
 
-    /* los botones de acciones se apilan en vez de quedar en fila */
-    .tabla-inventario td:last-child {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-    }
+ /* los botones de acciones se apilan en vez de quedar en fila */
+ .tabla-inventario td:last-child {
+ display: flex;
+ flex-direction: column;
+ gap: 0.6rem;
+ }
 
-    .btn-editar,
-    .btn-eliminar,
-    .btn-detalle {
-        width: 100%;
-        text-align: center;
-    }
+ .btn-editar,
+ .btn-eliminar,
+ .btn-detalle {
+ width: 100%;
+ text-align: center;
+ }
 
-    .modal-contenido {
-        width: 95%;
-        padding: 1.5rem;
-        max-height: 85vh;
-        overflow-y: auto; /* por si el formulario es mas alto que la pantalla */
-    }
+ .modal-contenido {
+ width: 95%;
+ padding: 1.5rem;
+ max-height: 85vh;
+ overflow-y: auto; /* por si el formulario es mas alto que la pantalla */
+ }
 
-    .modal-contenido img {
-        max-height: 140px;
-    }
-} 
+ .modal-contenido img {
+ max-height: 140px;
+ }
+}

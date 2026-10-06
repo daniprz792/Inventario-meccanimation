@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<!-- botón para volver al menú, visible dentro de las otras vistas -->
+<!-- boton para volver al menu, visible dentro de las otras vistas -->
 <button id="btn-volver-menu" class="btn-volver oculto" onclick="cambiarVista('vista-menu')"> Menú</button>
 
     <div class="seccion-logo">
@@ -65,12 +65,10 @@
         </table>
     </div>
  </div>
-
-
  
 <div id="vista-auditoria" class="vista oculto">
-    <h2>Auditoría de Inventario</h2>
-    <p>Presiona "Iniciar Inventario" y escanea cada producto para contarlo.</p>
+    <h2>Hacer Inventario</h2>
+    <p>Presiona "Iniciar Inventario" y escanea cada producto para contarlo</p>
 
     <button id="btn-iniciar-inventario" class="btn-guardar" onclick="iniciarInventario()">Iniciar Inventario</button>
 
@@ -83,7 +81,10 @@
 
     <p id="escaner-mensaje" class="escaner-mensaje"></p>
 
+    <button id="btn-finalizar-inventario" class="btn-eliminar" onclick = finalizarInventario()>Finalizar Inventario</button>
+
     <div class="auditoria-resultados">
+
         <div class="auditoria-columna">
             <h3>✔ Escaneados (<span id="contador-escaneados">0</span>)</h3>
             <div class="auditoria-tabla-wrap">
@@ -121,7 +122,7 @@
                 <input type="hidden" id="itemId">
 
                 <div class="campo">
-                    <label>Código:</label>
+                    <label>Codigo:</label>
                     <input type="text" id="codigoInventario" required>
                 </div>
 
@@ -162,7 +163,7 @@
                 </div>
 
                 <div class="campo">
-                    <label>Notas:</label>
+                    <label>Observaciones:</label>
                     <input type="text" id="notas">
                 </div>
 
@@ -193,7 +194,7 @@
             <form id="form-unidad">
                 <input type="hidden" id="unidadProductoId">
                 <div class="campo">
-                    <label>Código de unidad (ej: numero de serie):</label>
+                    <label>Codigo de unidad (ej: numero de serie):</label>
                     <input type="text" id="codigoUnidad" required>
                 </div>
                 <button type="submit" class="btn-guardar">+ Agregar unidad</button>
@@ -203,7 +204,7 @@
     <table class="tabla-inventario">
         <thead>
             <tr>
-                <th>Código</th>
+                <th>Codigo</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -222,7 +223,7 @@
 
             <form id="form-categoria">
                 <div class="campo">
-                    <label>Nombre de la categoria :</label>
+                    <label>Nombre de la categoria:</label>
                     <input type="text" id="nombreNuevaCategoria" required autofocus>
                 </div>
                 <button type="submit" class="btn-guardar">Agregar</button>
@@ -230,7 +231,7 @@
         </div>
     </div>
 
-    <!-- modal de confirmacion, reemplaza el confirm() nativo del navegador -->
+    <!-- modal de confirmacion, reemplaza el confirm  nativo del navegador -->
     <div id="modal-confirmacion" class="modal oculto">
         <div class="modal-contenido modal-confirmacion-contenido">
             <p id="confirmacion-mensaje">¿seguro?</p>
@@ -240,6 +241,24 @@
             </div>
         </div>
     </div>
+
+    <!-- modal de mensaje, para finalizar el inventario-->
+
+<div id="modal-resumen" class="modal oculto">
+    <div class="modal-contenido">
+        <button class="modal-cerrar" onclick="cerrarResumen()">&times;</button>
+        <h3>Resumen del Inventario</h3>
+
+        <p id="resumen-texto" class="contador-texto"></p>
+
+        <div id="resumen-faltantes-contenedor">
+            <h4>Productos faltantes:</h4>
+            <ul id="resumen-lista-faltantes"></ul>
+        </div>
+
+        <button class="btn-guardar" onclick="cerrarResumen()">Aceptar</button>
+    </div>
+</div>
 
     <script src="js/app.js"></script>
 </body>

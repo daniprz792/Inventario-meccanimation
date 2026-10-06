@@ -34,7 +34,6 @@ function mostrarConfirmacion(mensaje) {
 }
 
 //  categorias 
-
 async function cargarCategorias(idSeleccionado) {
     const respuesta = await fetch('/api/categorias');
     const categorias = await respuesta.json();
@@ -170,7 +169,7 @@ async function cargarItems() {
         tbody.appendChild(fila);
     });
 
-    filtrarTabla(); // reaplica el filtro activo despues de recargar la tabla
+    filtrarTabla(); // reaplica el filtro activo despues de recargar la tabla de la base de datos 
 }
 
 async function editarItem(item) {
@@ -441,5 +440,40 @@ document.getElementById('inputEscaner').addEventListener('keyup', (e) => {
     renderTablas();
     mostrarMensajeEscaner(`✔ "${producto.nombre}" contado correctamente`, 'ok');
 });
+
+// finaliza el inventario y muestra un resumen
+
+function finalizarInventario() {
+    const escaneados = productosParaContar.filter(p => codigosContados.has(p.codigoInventario));
+    const faltantes = productosParaContar.filter(p => !codigosContados.has(p.codigoInventario));
+
+    document.getElementById('resumen-texto').textContent =
+        `Contaste ${escaneados.length} de ${productosParaContar.length} productos.`;
+
+    const listaFaltantes = document.getElementById('resumen-lista-faltantes');
+    const contenedorFaltantes = document.getElementById('resumen-faltantes-contenedor');
+
+    if (faltantes.length === 0) {
+        contenedorFaltantes.classList.add('oculto');
+    } else {
+        contenedorFaltantes.classList.remove('oculto');
+        listaFaltantes.innerHTML = faltantes
+            .map(p => `<li>${p.codigoInventario} — ${p.nombre}</li>`)
+            .join('');
+    }
+
+    document.getElementById('modal-resumen').classList.remove('oculto');
+}
+
+function cerrarResumen() {
+    document.getElementById('modal-resumen').classList.add('oculto');
+
+    // reinicia la vista de auditoria para la proxima vez
+    document.getElementById('contador-contenedor').classList.add('oculto');
+    document.getElementById('btn-iniciar-inventario').classList.remove('oculto');
+    document.getElementById('escaner-mensaje').textContent = '';
+    productosParaContar = [];
+    codigosContados = new Set();
+}
 
 cambiarVista('vista-menu');
