@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import inventario.routes.CategoriaRoutes;
 import inventario.routes.UnidadRoutes;
+import inventario.routes.ConteoRoutes;
 
 public class App {
     public static void main(String[] args) throws IOException {
@@ -30,6 +31,7 @@ public class App {
         });
 
         app.get("/", ctx -> ctx.redirect("/index.html"));
+        ConteoRoutes.registrar(app);
         ItemRoutes.registrar(app);
         CategoriaRoutes.registrar(app);
         UnidadRoutes.registrar(app);

@@ -70,6 +70,21 @@
     <h2>Hacer Inventario</h2>
     <p>Presiona "Iniciar Inventario" y escanea cada producto para contarlo</p>
 
+    <!-- resumen y tabla del ultimo conteo guardado en la base de datos -->
+    <div class="ultimo-conteo-contenedor">
+        <h3>Último inventario realizado</h3>
+        <p id="ultimo-conteo-texto" class="contador-texto"></p>
+
+        <div class="auditoria-tabla-wrap">
+            <table class="tabla-inventario">
+                <thead>
+                    <tr><th>Código</th><th>Nombre</th><th>Estado</th></tr>
+                </thead>
+                <tbody id="tabla-ultimo-conteo"></tbody>
+            </table>
+        </div>
+    </div>
+
     <button id="btn-iniciar-inventario" class="btn-guardar" onclick="iniciarInventario()">Iniciar Inventario</button>
 
     <div id="contador-contenedor" class="oculto">
@@ -86,7 +101,7 @@
     <div class="auditoria-resultados">
 
         <div class="auditoria-columna">
-            <h3>✔ Escaneados (<span id="contador-escaneados">0</span>)</h3>
+            <h3>Escaneados (<span id="contador-escaneados">0</span>)</h3>
             <div class="auditoria-tabla-wrap">
                 <table class="tabla-inventario">
                     <thead>
@@ -98,7 +113,7 @@
         </div>
 
         <div class="auditoria-columna">
-            <h3>✗ Faltantes (<span id="contador-faltantes">0</span>)</h3>
+            <h3>Faltantes (<span id="contador-faltantes">0</span>)</h3>
             <div class="auditoria-tabla-wrap">
                 <table class="tabla-inventario">
                     <thead>

@@ -361,6 +361,11 @@ function cambiarVista(idVista) {
     if (idVista === 'vista-inventario') {
         cargarItems();
     }
+
+    // al entrar a Hacer Inventario, carga el resumen y la tabla del ultimo conteo guardado
+    if (idVista === 'vista-auditoria') {
+        cargarUltimoConteo();
+    }
 }
 // inicio de contar el inventario
 let productosParaContar = [];
@@ -438,14 +443,34 @@ document.getElementById('inputEscaner').addEventListener('keyup', (e) => {
     codigosContados.add(producto.codigoInventario);
     actualizarContador();
     renderTablas();
-    mostrarMensajeEscaner(`✔ "${producto.nombre}" contado correctamente`, 'ok');
+    mostrarMensajeEscaner(`"${producto.nombre}" contado correctamente`, 'ok');
 });
 
-// finaliza el inventario y muestra un resumen
+// finaliza el inventario, guarda el conteo en la base de datos y muestra un resumen
 
-function finalizarInventario() {
+async function finalizarInventario() {
     const escaneados = productosParaContar.filter(p => codigosContados.has(p.codigoInventario));
     const faltantes = productosParaContar.filter(p => !codigosContados.has(p.codigoInventario));
+
+    // en vez de guardar solo los codigos, guardamos codigo + nombre de cada uno,
+    // como arrays de objetos, para poder armar la tabla despues sin depender
+    // de la lista de productos actual (que puede cambiar con el tiempo)
+    const datosEscaneados = escaneados.map(p => ({ codigo: p.codigoInventario, nombre: p.nombre }));
+    const datosFaltantes = faltantes.map(p => ({ codigo: p.codigoInventario, nombre: p.nombre }));
+
+    // guarda este conteo en la base de datos antes de mostrar el resumen
+    await fetch('/api/conteos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            totalProductos: productosParaContar.length,
+            totalContados: escaneados.length,
+            // JSON.stringify aqui convierte el array en texto, porque la columna
+            // en MySQL es TEXT (guarda un string), no una lista real
+            escaneados: JSON.stringify(datosEscaneados),
+            faltantes: JSON.stringify(datosFaltantes)
+        })
+    });
 
     document.getElementById('resumen-texto').textContent =
         `Contaste ${escaneados.length} de ${productosParaContar.length} productos.`;
@@ -463,6 +488,9 @@ function finalizarInventario() {
     }
 
     document.getElementById('modal-resumen').classList.remove('oculto');
+
+    // refresca la tabla de "Último inventario realizado" con lo que se acaba de guardar
+    cargarUltimoConteo();
 }
 
 function cerrarResumen() {
@@ -474,6 +502,38 @@ function cerrarResumen() {
     document.getElementById('escaner-mensaje').textContent = '';
     productosParaContar = [];
     codigosContados = new Set();
+}
+
+// trae el ultimo conteo guardado y arma su tabla, dentro de la vista "Hacer Inventario"
+async function cargarUltimoConteo() {
+    const respuesta = await fetch('/api/conteos/ultimo');
+    const resumen = document.getElementById('ultimo-conteo-texto');
+    const tbody = document.getElementById('tabla-ultimo-conteo');
+    if (!resumen || !tbody) return;
+
+    // 204 significa "sin contenido": todavia no se ha guardado ningun conteo
+    if (respuesta.status === 204) {
+        resumen.textContent = 'Aún no se ha hecho ningún conteo.';
+        tbody.innerHTML = '';
+        return;
+    }
+
+    const conteo = await respuesta.json();
+    const fecha = new Date(conteo.fechaConteo).toLocaleString('es-CO');
+    resumen.textContent = `Último conteo: ${fecha} — ${conteo.totalContados} de ${conteo.totalProductos} productos`;
+
+    // JSON.parse hace lo contrario de JSON.stringify: convierte el texto guardado
+    // de vuelta en un array real que podemos recorrer con .map()
+    const escaneados = JSON.parse(conteo.escaneados || '[]');
+    const faltantes = JSON.parse(conteo.faltantes || '[]');
+
+    const filasEscaneados = escaneados
+        .map(p => `<tr><td>${p.codigo}</td><td>${p.nombre}</td><td class="estado-contado">Contado</td></tr>`);
+
+    const filasFaltantes = faltantes
+        .map(p => `<tr><td>${p.codigo}</td><td>${p.nombre}</td><td class="estado-faltante">Faltante</td></tr>`);
+
+    tbody.innerHTML = filasEscaneados.concat(filasFaltantes).join('');
 }
 
 cambiarVista('vista-menu');

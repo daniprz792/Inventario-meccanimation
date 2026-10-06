@@ -458,9 +458,9 @@ h2 {
 }
 
 .contador-texto {
- font-size: 3rem;
+ font-size: 2rem;
  font-weight: bold;
- color: var(--naranja);
+ color: var(--blanco);
  margin: 3rem 0 1rem;
 }
 
