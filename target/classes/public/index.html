@@ -66,6 +66,8 @@
     </div>
  </div>
 
+
+ 
 <div id="vista-auditoria" class="vista oculto">
     <h2>Auditoría de Inventario</h2>
     <p>Presiona "Iniciar Inventario" y escanea cada producto para contarlo.</p>
@@ -73,14 +75,40 @@
     <button id="btn-iniciar-inventario" class="btn-guardar" onclick="iniciarInventario()">Iniciar Inventario</button>
 
     <div id="contador-contenedor" class="oculto">
-        <p id="contador-texto" class="contador-texto">0 de 0 productos</p>
+    <p id="contador-texto" class="contador-texto">0 de 0 productos</p>
 
-        <div class="escaner-contenedor">
-            <input type="text" id="inputEscaner" placeholder="Escanea el código de barras aquí...">
+    <div class="escaner-contenedor">
+        <input type="text" id="inputEscaner" placeholder="Escanea el código de barras aquí...">
+    </div>
+
+    <p id="escaner-mensaje" class="escaner-mensaje"></p>
+
+    <div class="auditoria-resultados">
+        <div class="auditoria-columna">
+            <h3>✔ Escaneados (<span id="contador-escaneados">0</span>)</h3>
+            <div class="auditoria-tabla-wrap">
+                <table class="tabla-inventario">
+                    <thead>
+                        <tr><th>Código</th><th>Nombre</th></tr>
+                    </thead>
+                    <tbody id="tabla-escaneados"></tbody>
+                </table>
+            </div>
         </div>
 
-        <p id="escaner-mensaje" class="escaner-mensaje"></p>
+        <div class="auditoria-columna">
+            <h3>✗ Faltantes (<span id="contador-faltantes">0</span>)</h3>
+            <div class="auditoria-tabla-wrap">
+                <table class="tabla-inventario">
+                    <thead>
+                        <tr><th>Código</th><th>Nombre</th></tr>
+                    </thead>
+                    <tbody id="tabla-faltantes"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
+</div>
 </div>
 
     <!-- modal con el formulario de agregar/editar producto -->

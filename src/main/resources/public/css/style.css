@@ -495,7 +495,54 @@ background: var(--naranja);
 }
 
 
+.auditoria-resultados {
+    display: flex;
+    gap: 2rem;
+    margin-top: 3rem;
+    text-align: left;
+}
 
+.auditoria-columna {
+    flex: 1;
+    min-width: 0;
+}
+
+.auditoria-columna h3 {
+    color: var(--naranja);
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+}
+
+.auditoria-tabla-wrap {
+    max-height: 35rem;
+    overflow-y: auto;
+    border-radius: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .auditoria-resultados {
+        flex-direction: column;
+    }
+}
+
+/*escanear*/
+.escaner-mensaje {
+    font-size: 1.4rem;
+    margin-top: 1.5rem;
+    min-height: 2.2rem;
+}
+
+.escaner-mensaje.ok {
+    color: #2ecc71;
+}
+
+.escaner-mensaje.error {
+    color: var(--rojo);
+}
+
+.escaner-mensaje.repetido {
+    color: var(--naranja);
+}
 /**responsive tablets*/
 @media (max-width: 768px) {
 

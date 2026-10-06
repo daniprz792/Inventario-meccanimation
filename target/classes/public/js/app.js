@@ -363,8 +363,7 @@ function cambiarVista(idVista) {
         cargarItems();
     }
 }
-
-// inicio de la auditoria de inventario
+// inicio de contar el inventario
 let productosParaContar = [];
 let codigosContados = new Set();
 
@@ -378,12 +377,69 @@ async function iniciarInventario() {
 
     document.getElementById('btn-iniciar-inventario').classList.add('oculto');
     document.getElementById('contador-contenedor').classList.remove('oculto');
-    document.getElementById('contador-texto').textContent =
-        `${codigosContados.size} de ${productosParaContar.length} productos`;
+    actualizarContador();
+    renderTablas();
 
     const inputEscaner = document.getElementById('inputEscaner');
     inputEscaner.value = '';
     inputEscaner.focus();
 }
+
+function actualizarContador() {
+    document.getElementById('contador-texto').textContent =
+        `${codigosContados.size} de ${productosParaContar.length} productos`;
+}
+
+function mostrarMensajeEscaner(texto, tipo) {
+    const mensaje = document.getElementById('escaner-mensaje');
+    mensaje.textContent = texto;
+    mensaje.className = 'escaner-mensaje ' + tipo;
+}
+
+function renderTablas() {
+    const escaneados = productosParaContar.filter(p => codigosContados.has(p.codigoInventario));
+    const faltantes = productosParaContar.filter(p => !codigosContados.has(p.codigoInventario));
+
+    document.getElementById('contador-escaneados').textContent = escaneados.length;
+    document.getElementById('contador-faltantes').textContent = faltantes.length;
+
+    document.getElementById('tabla-escaneados').innerHTML = escaneados
+        .map(p => `<tr><td>${p.codigoInventario}</td><td>${p.nombre}</td></tr>`)
+        .join('');
+
+    document.getElementById('tabla-faltantes').innerHTML = faltantes
+        .map(p => `<tr><td>${p.codigoInventario}</td><td>${p.nombre}</td></tr>`)
+        .join('');
+}
+
+document.getElementById('inputEscaner').addEventListener('keyup', (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+
+    const inputEscaner = e.target;
+    const codigoEscaneado = inputEscaner.value.trim().toLowerCase();
+    inputEscaner.value = '';
+
+    if (!codigoEscaneado) return;
+
+    const producto = productosParaContar.find(
+        p => p.codigoInventario.toLowerCase() === codigoEscaneado
+    );
+
+    if (!producto) {
+        mostrarMensajeEscaner(`"${codigoEscaneado}" no se encontró en el inventario`, 'error');
+        return;
+    }
+
+    if (codigosContados.has(producto.codigoInventario)) {
+        mostrarMensajeEscaner(`"${producto.nombre}" ya fue contado`, 'repetido');
+        return;
+    }
+
+    codigosContados.add(producto.codigoInventario);
+    actualizarContador();
+    renderTablas();
+    mostrarMensajeEscaner(`✔ "${producto.nombre}" contado correctamente`, 'ok');
+});
 
 cambiarVista('vista-menu');
