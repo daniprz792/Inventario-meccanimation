@@ -14,6 +14,7 @@ public class ConteoRoutes {
             dao.guardarConteo(conteo);
             ctx.status(201);
         });
+        
 
         app.get("/api/conteos/ultimo", ctx -> {
             ConteoInventario ultimo = dao.obtenerUltimoConteo();
@@ -23,5 +24,12 @@ public class ConteoRoutes {
                 ctx.json(ultimo);
             }
         });
+
+
+        app.get("/api/conteos", ctx -> {
+        ctx.json(dao.listarConteos());
+         });
+
+
     }
 }

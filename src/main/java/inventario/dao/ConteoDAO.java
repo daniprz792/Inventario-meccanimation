@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import inventario.config.ConexionDB;
 import inventario.model.ConteoInventario;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConteoDAO {
 
     public void guardarConteo(ConteoInventario conteo) {
@@ -30,31 +33,35 @@ public class ConteoDAO {
     }
 
     // trae el conteo más reciente, ordenando por fecha descendente y tomando solo 1
-    public ConteoInventario obtenerUltimoConteo() {
-        String sql = """
-            SELECT * FROM conteo_inventario
-            ORDER BY fecha_conteo DESC
-            LIMIT 1
-            """;
-        ConteoInventario conteo = null;
-        try {
-            Connection conexion = ConexionDB.conectar();
-            PreparedStatement stmt = conexion.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
+  // trae todos los conteos guardados, del mas reciente al mas antiguo
+public List<ConteoInventario> listarConteos() {
+    List<ConteoInventario> lista = new ArrayList<>();
+    String sql = """
+        SELECT * FROM conteo_inventario
+        ORDER BY fecha_conteo DESC
+        """;
+    try {
+        Connection conexion = ConexionDB.conectar();
+        PreparedStatement stmt = conexion.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                conteo = new ConteoInventario();
-                conteo.setId(rs.getInt("id_conteo"));
-                conteo.setFechaConteo(rs.getString("fecha_conteo"));
-                conteo.setTotalProductos(rs.getInt("total_productos"));
-                conteo.setTotalContados(rs.getInt("total_contados"));
-                conteo.setEscaneados(rs.getString("escaneados"));
-                conteo.setFaltantes(rs.getString("faltantes"));
-            }
-            conexion.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        while (rs.next()) {
+            ConteoInventario conteo = new ConteoInventario();
+            conteo.setId(rs.getInt("id_conteo"));
+            conteo.setFechaConteo(rs.getString("fecha_conteo"));
+            conteo.setTotalProductos(rs.getInt("total_productos"));
+            conteo.setTotalContados(rs.getInt("total_contados"));
+            conteo.setEscaneados(rs.getString("escaneados"));
+            conteo.setFaltantes(rs.getString("faltantes"));
+            lista.add(conteo);
         }
-        return conteo;
+        conexion.close();
+    } catch (Exception e) {
+        System.out.println(e.getMessage());
     }
+    return lista;
+
+
+}
+
 }

@@ -587,4 +587,4 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
 
 verificarSesion();
 
-cambiarVista('vista-menu');
+cambiarVista('vista-menu'); 
