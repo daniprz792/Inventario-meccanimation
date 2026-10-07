@@ -34,6 +34,7 @@ function mostrarConfirmacion(mensaje) {
 }
 
 //  categorias 
+
 async function cargarCategorias(idSeleccionado) {
     const respuesta = await fetch('/api/categorias');
     const categorias = await respuesta.json();
@@ -169,7 +170,7 @@ async function cargarItems() {
         tbody.appendChild(fila);
     });
 
-    filtrarTabla(); // reaplica el filtro activo despues de recargar la tabla de la base de datos 
+    filtrarTabla(); // reaplica el filtro activo despues de recargar la tabla
 }
 
 async function editarItem(item) {
@@ -362,14 +363,194 @@ function cambiarVista(idVista) {
         cargarItems();
     }
 
-    // al entrar a Hacer Inventario, carga el resumen y la tabla del ultimo conteo guardado
     if (idVista === 'vista-auditoria') {
         cargarUltimoConteo();
     }
 }
-// inicio de contar el inventario
+
+// inicio de la auditoria de inventario
 let productosParaContar = [];
 let codigosContados = new Set();
+const inputEscaner = document.getElementById('inputEscaner');
+
+if (inputEscaner) {
+    inputEscaner.addEventListener('keydown', (evento) => {
+        if (evento.key === 'Enter') {
+            evento.preventDefault();
+            registrarEscaneo();
+        }
+    });
+}
+
+function renderAuditoriaTablas() {
+    const tablaEscaneados = document.getElementById('tabla-escaneados');
+    const tablaFaltantes = document.getElementById('tabla-faltantes');
+    const contadorEscaneados = document.getElementById('contador-escaneados');
+    const contadorFaltantes = document.getElementById('contador-faltantes');
+
+    const escaneados = productosParaContar.filter(item => codigosContados.has(String(item.codigoInventario)));
+    const faltantes = productosParaContar.filter(item => !codigosContados.has(String(item.codigoInventario)));
+
+    tablaEscaneados.innerHTML = escaneados.map(item => `
+        <tr>
+            <td>${item.codigoInventario}</td>
+            <td>${item.nombre}</td>
+        </tr>
+    `).join('');
+
+    tablaFaltantes.innerHTML = faltantes.map(item => `
+        <tr>
+            <td>${item.codigoInventario}</td>
+            <td>${item.nombre}</td>
+        </tr>
+    `).join('');
+
+    contadorEscaneados.textContent = String(escaneados.length);
+    contadorFaltantes.textContent = String(faltantes.length);
+
+    const contadorTexto = document.getElementById('contador-texto');
+    if (contadorTexto) {
+        contadorTexto.textContent = `${codigosContados.size} de ${productosParaContar.length} productos`;
+    }
+}
+
+function mostrarMensajeEscaner(mensaje) {
+    const elemento = document.getElementById('escaner-mensaje');
+    if (!elemento) return;
+    elemento.textContent = mensaje;
+}
+
+function registrarEscaneo() {
+    const inputEscaner = document.getElementById('inputEscaner');
+    if (!inputEscaner || productosParaContar.length === 0) return;
+
+    const codigo = inputEscaner.value.trim();
+    if (!codigo) {
+        mostrarMensajeEscaner('Ingresa un código antes de presionar Enter');
+        return;
+    }
+
+    const producto = productosParaContar.find(item => String(item.codigoInventario) === codigo);
+    if (!producto) {
+        mostrarMensajeEscaner(`No existe el producto con código ${codigo}`);
+        inputEscaner.value = '';
+        inputEscaner.focus();
+        return;
+    }
+
+    if (codigosContados.has(codigo)) {
+        mostrarMensajeEscaner(`El producto ${producto.nombre} ya fue escaneado`);
+        inputEscaner.value = '';
+        inputEscaner.focus();
+        return;
+    }
+
+    codigosContados.add(codigo);
+    mostrarMensajeEscaner(`Escaneado: ${producto.nombre}`);
+    inputEscaner.value = '';
+    inputEscaner.focus();
+    renderAuditoriaTablas();
+}
+
+async function cargarUltimoConteo() {
+    const texto = document.getElementById('ultimo-conteo-texto');
+    const tabla = document.getElementById('tabla-ultimo-conteo');
+    if (!texto || !tabla) return;
+
+    const respuesta = await fetch('/api/conteos/ultimo');
+    if (!respuesta.ok || respuesta.status === 204) {
+        texto.textContent = 'Todavía no hay un inventario guardado';
+        tabla.innerHTML = '';
+        return;
+    }
+
+    const conteo = await respuesta.json();
+    const escaneados = JSON.parse(conteo.escaneados || '[]');
+    const faltantes = JSON.parse(conteo.faltantes || '[]');
+
+    const fechaConteo = conteo.fechaConteo
+        ? new Date(conteo.fechaConteo).toLocaleString('es-MX', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        : 'Sin fecha';
+
+    texto.textContent = `Último inventario: ${fechaConteo} — ${conteo.totalContados} de ${conteo.totalProductos} productos contabilizados`;
+    tabla.innerHTML = escaneados.map(item => `
+        <tr>
+            <td>${fechaConteo}</td>
+            <td>${item.codigoInventario}</td>
+            <td>${item.nombre}</td>
+            <td>Escaneado</td>
+        </tr>
+    `).concat(faltantes.map(item => `
+        <tr>
+            <td>${fechaConteo}</td>
+            <td>${item.codigoInventario}</td>
+            <td>${item.nombre}</td>
+            <td>Faltante</td>
+        </tr>
+    `)).join('');
+}
+
+async function finalizarInventario() {
+    if (!productosParaContar.length) {
+        mostrarMensajeEscaner('Primero inicia el inventario');
+        return;
+    }
+
+    const escaneados = productosParaContar.filter(item => codigosContados.has(String(item.codigoInventario)));
+    const faltantes = productosParaContar.filter(item => !codigosContados.has(String(item.codigoInventario)));
+
+    const resumenTexto = document.getElementById('resumen-texto');
+    const listaFaltantes = document.getElementById('resumen-lista-faltantes');
+    const modalResumen = document.getElementById('modal-resumen');
+
+    if (resumenTexto) {
+        resumenTexto.textContent = `${escaneados.length} de ${productosParaContar.length} productos contabilizados`;
+    }
+
+    if (listaFaltantes) {
+        listaFaltantes.innerHTML = faltantes.length
+            ? faltantes.map(item => `<li>${item.codigoInventario} — ${item.nombre}</li>`).join('')
+            : '<li>Sin faltantes</li>';
+    }
+
+    if (modalResumen) {
+        modalResumen.classList.remove('oculto');
+    }
+
+    try {
+        const respuesta = await fetch('/api/conteos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                totalProductos: productosParaContar.length,
+                totalContados: escaneados.length,
+                escaneados: JSON.stringify(escaneados),
+                faltantes: JSON.stringify(faltantes)
+            })
+        });
+
+        if (!respuesta.ok) {
+            throw new Error('No se pudo guardar el inventario');
+        }
+
+        await cargarUltimoConteo();
+    } catch (error) {
+        alert(error.message || 'No se pudo guardar el inventario');
+    }
+}
+
+function cerrarResumen() {
+    const modalResumen = document.getElementById('modal-resumen');
+    if (modalResumen) {
+        modalResumen.classList.add('oculto');
+    }
+}
 
 async function iniciarInventario() {
     const respuesta = await fetch('/api/items');
@@ -381,159 +562,29 @@ async function iniciarInventario() {
 
     document.getElementById('btn-iniciar-inventario').classList.add('oculto');
     document.getElementById('contador-contenedor').classList.remove('oculto');
-    actualizarContador();
-    renderTablas();
 
-    const inputEscaner = document.getElementById('inputEscaner');
     inputEscaner.value = '';
     inputEscaner.focus();
+    renderAuditoriaTablas();
+    mostrarMensajeEscaner('Escanea cada código y presiona Enter');
 }
 
-function actualizarContador() {
-    document.getElementById('contador-texto').textContent =
-        `${codigosContados.size} de ${productosParaContar.length} productos`;
-}
-
-function mostrarMensajeEscaner(texto, tipo) {
-    const mensaje = document.getElementById('escaner-mensaje');
-    mensaje.textContent = texto;
-    mensaje.className = 'escaner-mensaje ' + tipo;
-}
-
-function renderTablas() {
-    const escaneados = productosParaContar.filter(p => codigosContados.has(p.codigoInventario));
-    const faltantes = productosParaContar.filter(p => !codigosContados.has(p.codigoInventario));
-
-    document.getElementById('contador-escaneados').textContent = escaneados.length;
-    document.getElementById('contador-faltantes').textContent = faltantes.length;
-
-    document.getElementById('tabla-escaneados').innerHTML = escaneados
-        .map(p => `<tr><td>${p.codigoInventario}</td><td>${p.nombre}</td></tr>`)
-        .join('');
-
-    document.getElementById('tabla-faltantes').innerHTML = faltantes
-        .map(p => `<tr><td>${p.codigoInventario}</td><td>${p.nombre}</td></tr>`)
-        .join('');
-}
-
-document.getElementById('inputEscaner').addEventListener('keyup', (e) => {
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
-
-    const inputEscaner = e.target;
-    const codigoEscaneado = inputEscaner.value.trim().toLowerCase();
-    inputEscaner.value = '';
-
-    if (!codigoEscaneado) return;
-
-    const producto = productosParaContar.find(
-        p => p.codigoInventario.toLowerCase() === codigoEscaneado
-    );
-
-    if (!producto) {
-        mostrarMensajeEscaner(`"${codigoEscaneado}" no se encontró en el inventario`, 'error');
+// si no hay sesion activa, no deja ver la app y manda al login
+async function verificarSesion() {
+    const respuesta = await fetch('/api/sesion');
+    if (!respuesta.ok) {
+        window.location.href = 'login.html';
         return;
     }
+    const nombre = await respuesta.text();
+    document.getElementById('usuario-saludo').textContent = `Hola, ${nombre}`;
+}
 
-    if (codigosContados.has(producto.codigoInventario)) {
-        mostrarMensajeEscaner(`"${producto.nombre}" ya fue contado`, 'repetido');
-        return;
-    }
-
-    codigosContados.add(producto.codigoInventario);
-    actualizarContador();
-    renderTablas();
-    mostrarMensajeEscaner(`"${producto.nombre}" contado correctamente`, 'ok');
+document.getElementById('btn-logout').addEventListener('click', async () => {
+    await fetch('/api/logout', { method: 'POST' });
+    window.location.href = 'login.html';
 });
 
-// finaliza el inventario, guarda el conteo en la base de datos y muestra un resumen
-
-async function finalizarInventario() {
-    const escaneados = productosParaContar.filter(p => codigosContados.has(p.codigoInventario));
-    const faltantes = productosParaContar.filter(p => !codigosContados.has(p.codigoInventario));
-
-    // en vez de guardar solo los codigos, guardamos codigo + nombre de cada uno,
-    // como arrays de objetos, para poder armar la tabla despues sin depender
-    // de la lista de productos actual (que puede cambiar con el tiempo)
-    const datosEscaneados = escaneados.map(p => ({ codigo: p.codigoInventario, nombre: p.nombre }));
-    const datosFaltantes = faltantes.map(p => ({ codigo: p.codigoInventario, nombre: p.nombre }));
-
-    // guarda este conteo en la base de datos antes de mostrar el resumen
-    await fetch('/api/conteos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            totalProductos: productosParaContar.length,
-            totalContados: escaneados.length,
-            // JSON.stringify aqui convierte el array en texto, porque la columna
-            // en MySQL es TEXT (guarda un string), no una lista real
-            escaneados: JSON.stringify(datosEscaneados),
-            faltantes: JSON.stringify(datosFaltantes)
-        })
-    });
-
-    document.getElementById('resumen-texto').textContent =
-        `Contaste ${escaneados.length} de ${productosParaContar.length} productos.`;
-
-    const listaFaltantes = document.getElementById('resumen-lista-faltantes');
-    const contenedorFaltantes = document.getElementById('resumen-faltantes-contenedor');
-
-    if (faltantes.length === 0) {
-        contenedorFaltantes.classList.add('oculto');
-    } else {
-        contenedorFaltantes.classList.remove('oculto');
-        listaFaltantes.innerHTML = faltantes
-            .map(p => `<li>${p.codigoInventario} — ${p.nombre}</li>`)
-            .join('');
-    }
-
-    document.getElementById('modal-resumen').classList.remove('oculto');
-
-    // refresca la tabla de "Último inventario realizado" con lo que se acaba de guardar
-    cargarUltimoConteo();
-}
-
-function cerrarResumen() {
-    document.getElementById('modal-resumen').classList.add('oculto');
-
-    // reinicia la vista de auditoria para la proxima vez
-    document.getElementById('contador-contenedor').classList.add('oculto');
-    document.getElementById('btn-iniciar-inventario').classList.remove('oculto');
-    document.getElementById('escaner-mensaje').textContent = '';
-    productosParaContar = [];
-    codigosContados = new Set();
-}
-
-// trae el ultimo conteo guardado y arma su tabla, dentro de la vista "Hacer Inventario"
-async function cargarUltimoConteo() {
-    const respuesta = await fetch('/api/conteos/ultimo');
-    const resumen = document.getElementById('ultimo-conteo-texto');
-    const tbody = document.getElementById('tabla-ultimo-conteo');
-    if (!resumen || !tbody) return;
-
-    // 204 significa "sin contenido": todavia no se ha guardado ningun conteo
-    if (respuesta.status === 204) {
-        resumen.textContent = 'Aún no se ha hecho ningún conteo.';
-        tbody.innerHTML = '';
-        return;
-    }
-
-    const conteo = await respuesta.json();
-    const fecha = new Date(conteo.fechaConteo).toLocaleString('es-CO');
-    resumen.textContent = `Último conteo: ${fecha} — ${conteo.totalContados} de ${conteo.totalProductos} productos`;
-
-    // JSON.parse hace lo contrario de JSON.stringify: convierte el texto guardado
-    // de vuelta en un array real que podemos recorrer con .map()
-    const escaneados = JSON.parse(conteo.escaneados || '[]');
-    const faltantes = JSON.parse(conteo.faltantes || '[]');
-
-    const filasEscaneados = escaneados
-        .map(p => `<tr><td>${p.codigo}</td><td>${p.nombre}</td><td class="estado-contado">Contado</td></tr>`);
-
-    const filasFaltantes = faltantes
-        .map(p => `<tr><td>${p.codigo}</td><td>${p.nombre}</td><td class="estado-faltante">Faltante</td></tr>`);
-
-    tbody.innerHTML = filasEscaneados.concat(filasFaltantes).join('');
-}
+verificarSesion();
 
 cambiarVista('vista-menu');

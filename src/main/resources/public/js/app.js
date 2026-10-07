@@ -362,11 +362,195 @@ function cambiarVista(idVista) {
     if (idVista === 'vista-inventario') {
         cargarItems();
     }
+
+    if (idVista === 'vista-auditoria') {
+        cargarUltimoConteo();
+    }
 }
 
 // inicio de la auditoria de inventario
 let productosParaContar = [];
 let codigosContados = new Set();
+const inputEscaner = document.getElementById('inputEscaner');
+
+if (inputEscaner) {
+    inputEscaner.addEventListener('keydown', (evento) => {
+        if (evento.key === 'Enter') {
+            evento.preventDefault();
+            registrarEscaneo();
+        }
+    });
+}
+
+function renderAuditoriaTablas() {
+    const tablaEscaneados = document.getElementById('tabla-escaneados');
+    const tablaFaltantes = document.getElementById('tabla-faltantes');
+    const contadorEscaneados = document.getElementById('contador-escaneados');
+    const contadorFaltantes = document.getElementById('contador-faltantes');
+
+    const escaneados = productosParaContar.filter(item => codigosContados.has(String(item.codigoInventario)));
+    const faltantes = productosParaContar.filter(item => !codigosContados.has(String(item.codigoInventario)));
+
+    tablaEscaneados.innerHTML = escaneados.map(item => `
+        <tr>
+            <td>${item.codigoInventario}</td>
+            <td>${item.nombre}</td>
+        </tr>
+    `).join('');
+
+    tablaFaltantes.innerHTML = faltantes.map(item => `
+        <tr>
+            <td>${item.codigoInventario}</td>
+            <td>${item.nombre}</td>
+        </tr>
+    `).join('');
+
+    contadorEscaneados.textContent = String(escaneados.length);
+    contadorFaltantes.textContent = String(faltantes.length);
+
+    const contadorTexto = document.getElementById('contador-texto');
+    if (contadorTexto) {
+        contadorTexto.textContent = `${codigosContados.size} de ${productosParaContar.length} productos`;
+    }
+}
+
+function mostrarMensajeEscaner(mensaje) {
+    const elemento = document.getElementById('escaner-mensaje');
+    if (!elemento) return;
+    elemento.textContent = mensaje;
+}
+
+function registrarEscaneo() {
+    const inputEscaner = document.getElementById('inputEscaner');
+    if (!inputEscaner || productosParaContar.length === 0) return;
+
+    const codigo = inputEscaner.value.trim();
+    if (!codigo) {
+        mostrarMensajeEscaner('Ingresa un código antes de presionar Enter');
+        return;
+    }
+
+    const producto = productosParaContar.find(item => String(item.codigoInventario) === codigo);
+    if (!producto) {
+        mostrarMensajeEscaner(`No existe el producto con código ${codigo}`);
+        inputEscaner.value = '';
+        inputEscaner.focus();
+        return;
+    }
+
+    if (codigosContados.has(codigo)) {
+        mostrarMensajeEscaner(`El producto ${producto.nombre} ya fue escaneado`);
+        inputEscaner.value = '';
+        inputEscaner.focus();
+        return;
+    }
+
+    codigosContados.add(codigo);
+    mostrarMensajeEscaner(`Escaneado: ${producto.nombre}`);
+    inputEscaner.value = '';
+    inputEscaner.focus();
+    renderAuditoriaTablas();
+}
+
+async function cargarUltimoConteo() {
+    const texto = document.getElementById('ultimo-conteo-texto');
+    const tabla = document.getElementById('tabla-ultimo-conteo');
+    if (!texto || !tabla) return;
+
+    const respuesta = await fetch('/api/conteos/ultimo');
+    if (!respuesta.ok || respuesta.status === 204) {
+        texto.textContent = 'Todavía no hay un inventario guardado';
+        tabla.innerHTML = '';
+        return;
+    }
+
+    const conteo = await respuesta.json();
+    const escaneados = JSON.parse(conteo.escaneados || '[]');
+    const faltantes = JSON.parse(conteo.faltantes || '[]');
+
+    const fechaConteo = conteo.fechaConteo
+        ? new Date(conteo.fechaConteo).toLocaleString('es-MX', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        : 'Sin fecha';
+
+    texto.textContent = `Último inventario: ${fechaConteo} — ${conteo.totalContados} de ${conteo.totalProductos} productos contabilizados`;
+    tabla.innerHTML = escaneados.map(item => `
+        <tr>
+            <td>${fechaConteo}</td>
+            <td>${item.codigoInventario}</td>
+            <td>${item.nombre}</td>
+            <td>Escaneado</td>
+        </tr>
+    `).concat(faltantes.map(item => `
+        <tr>
+            <td>${fechaConteo}</td>
+            <td>${item.codigoInventario}</td>
+            <td>${item.nombre}</td>
+            <td>Faltante</td>
+        </tr>
+    `)).join('');
+}
+
+async function finalizarInventario() {
+    if (!productosParaContar.length) {
+        mostrarMensajeEscaner('Primero inicia el inventario');
+        return;
+    }
+
+    const escaneados = productosParaContar.filter(item => codigosContados.has(String(item.codigoInventario)));
+    const faltantes = productosParaContar.filter(item => !codigosContados.has(String(item.codigoInventario)));
+
+    const resumenTexto = document.getElementById('resumen-texto');
+    const listaFaltantes = document.getElementById('resumen-lista-faltantes');
+    const modalResumen = document.getElementById('modal-resumen');
+
+    if (resumenTexto) {
+        resumenTexto.textContent = `${escaneados.length} de ${productosParaContar.length} productos contabilizados`;
+    }
+
+    if (listaFaltantes) {
+        listaFaltantes.innerHTML = faltantes.length
+            ? faltantes.map(item => `<li>${item.codigoInventario} — ${item.nombre}</li>`).join('')
+            : '<li>Sin faltantes</li>';
+    }
+
+    if (modalResumen) {
+        modalResumen.classList.remove('oculto');
+    }
+
+    try {
+        const respuesta = await fetch('/api/conteos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                totalProductos: productosParaContar.length,
+                totalContados: escaneados.length,
+                escaneados: JSON.stringify(escaneados),
+                faltantes: JSON.stringify(faltantes)
+            })
+        });
+
+        if (!respuesta.ok) {
+            throw new Error('No se pudo guardar el inventario');
+        }
+
+        await cargarUltimoConteo();
+    } catch (error) {
+        alert(error.message || 'No se pudo guardar el inventario');
+    }
+}
+
+function cerrarResumen() {
+    const modalResumen = document.getElementById('modal-resumen');
+    if (modalResumen) {
+        modalResumen.classList.add('oculto');
+    }
+}
 
 async function iniciarInventario() {
     const respuesta = await fetch('/api/items');
@@ -378,12 +562,29 @@ async function iniciarInventario() {
 
     document.getElementById('btn-iniciar-inventario').classList.add('oculto');
     document.getElementById('contador-contenedor').classList.remove('oculto');
-    document.getElementById('contador-texto').textContent =
-        `${codigosContados.size} de ${productosParaContar.length} productos`;
 
-    const inputEscaner = document.getElementById('inputEscaner');
     inputEscaner.value = '';
     inputEscaner.focus();
+    renderAuditoriaTablas();
+    mostrarMensajeEscaner('Escanea cada código y presiona Enter');
 }
+
+// si no hay sesion activa, no deja ver la app y manda al login
+async function verificarSesion() {
+    const respuesta = await fetch('/api/sesion');
+    if (!respuesta.ok) {
+        window.location.href = 'login.html';
+        return;
+    }
+    const nombre = await respuesta.text();
+    document.getElementById('usuario-saludo').textContent = `Hola, ${nombre}`;
+}
+
+document.getElementById('btn-logout').addEventListener('click', async () => {
+    await fetch('/api/logout', { method: 'POST' });
+    window.location.href = 'login.html';
+});
+
+verificarSesion();
 
 cambiarVista('vista-menu');

@@ -10,6 +10,9 @@ import inventario.routes.CategoriaRoutes;
 import inventario.routes.UnidadRoutes;
 import inventario.routes.ConteoRoutes;
 
+import inventario.routes.LoginRoutes;
+import io.javalin.http.UnauthorizedResponse;
+
 public class App {
     public static void main(String[] args) throws IOException {
         Files.createDirectories(Path.of("uploads/images"));
@@ -29,13 +32,26 @@ public class App {
                 staticFiles.location = Location.EXTERNAL;
             });
         });
-
+        
         app.get("/", ctx -> ctx.redirect("/index.html"));
         ConteoRoutes.registrar(app);
         ItemRoutes.registrar(app);
         CategoriaRoutes.registrar(app);
         UnidadRoutes.registrar(app);
         app.start(7000);
+
+
+        LoginRoutes.registrar(app);
+
+    // protege TODAS las rutas /api/* excepto /api/login, para que nadie pueda
+    // crear/editar/eliminar productos sin haber iniciado sesión primero
+    app.before("/api/*", ctx -> {
+    if (ctx.path().equals("/api/login")) return;
+    Object nombre = ctx.req().getSession().getAttribute("usuarioNombre");
+    if (nombre == null) {
+        throw new UnauthorizedResponse("No autenticado");
+    }
+});
     }
 }
 

@@ -17,6 +17,11 @@
     <header class="cabecera">
         <h1>Inventario Meccanimation</h1>
     </header>
+      <div class="usuario-info">
+        <span id="usuario-saludo"></span>
+        <button id="btn-logout" class="btn-eliminar">Cerrar sesión</button>
+    </div>
+</header>
 
     <!-- menu de inicio -->
 <div id="vista-menu" class="vista">
@@ -79,7 +84,7 @@
         <div class="auditoria-tabla-wrap">
             <table class="tabla-inventario">
                 <thead>
-                    <tr><th>Código</th><th>Nombre</th><th>Estado</th></tr>
+                    <tr><th>Fecha</th><th>Código</th><th>Nombre</th><th>Estado</th></tr>
                 </thead>
                 <tbody id="tabla-ultimo-conteo"></tbody>
             </table>
@@ -279,3 +284,4 @@
     <script src="js/app.js"></script>
 </body>
 </html>
+
