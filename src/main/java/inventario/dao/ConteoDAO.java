@@ -3,12 +3,11 @@ package inventario.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import inventario.config.ConexionDB;
 import inventario.model.ConteoInventario;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConteoDAO {
 
@@ -33,35 +32,60 @@ public class ConteoDAO {
     }
 
     // trae el conteo más reciente, ordenando por fecha descendente y tomando solo 1
-  // trae todos los conteos guardados, del mas reciente al mas antiguo
-public List<ConteoInventario> listarConteos() {
-    List<ConteoInventario> lista = new ArrayList<>();
-    String sql = """
-        SELECT * FROM conteo_inventario
-        ORDER BY fecha_conteo DESC
-        """;
-    try {
-        Connection conexion = ConexionDB.conectar();
-        PreparedStatement stmt = conexion.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
+    public ConteoInventario obtenerUltimoConteo() {
+        String sql = """
+            SELECT * FROM conteo_inventario
+            ORDER BY fecha_conteo DESC
+            LIMIT 1
+            """;
+        ConteoInventario conteo = null;
+        try {
+            Connection conexion = ConexionDB.conectar();
+            PreparedStatement stmt = conexion.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-        while (rs.next()) {
-            ConteoInventario conteo = new ConteoInventario();
-            conteo.setId(rs.getInt("id_conteo"));
-            conteo.setFechaConteo(rs.getString("fecha_conteo"));
-            conteo.setTotalProductos(rs.getInt("total_productos"));
-            conteo.setTotalContados(rs.getInt("total_contados"));
-            conteo.setEscaneados(rs.getString("escaneados"));
-            conteo.setFaltantes(rs.getString("faltantes"));
-            lista.add(conteo);
+            if (rs.next()) {
+                conteo = mapearConteo(rs);
+            }
+            conexion.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-        conexion.close();
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
+        return conteo;
     }
-    return lista;
 
+    // trae todos los conteos guardados, del más reciente al más antiguo
+    public List<ConteoInventario> listarConteos() {
+        List<ConteoInventario> lista = new ArrayList<>();
+        String sql = """
+            SELECT * FROM conteo_inventario
+            ORDER BY fecha_conteo DESC
+            """;
+        try {
+            Connection conexion = ConexionDB.conectar();
+            PreparedStatement stmt = conexion.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-}
+            while (rs.next()) {
+                lista.add(mapearConteo(rs));
+            }
+            conexion.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return lista;
+    }
 
+    // convierte una fila de la tabla en un objeto ConteoInventario
+    // (así no repetimos estas 6 líneas en los dos métodos de lectura)
+    private ConteoInventario mapearConteo(ResultSet rs) throws Exception {
+        ConteoInventario conteo = new ConteoInventario();
+        conteo.setId(rs.getInt("id_conteo"));
+        conteo.setFechaConteo(rs.getString("fecha_conteo"));
+        conteo.setTotalProductos(rs.getInt("total_productos"));
+        conteo.setTotalContados(rs.getInt("total_contados"));
+        conteo.setEscaneados(rs.getString("escaneados"));
+        conteo.setFaltantes(rs.getString("faltantes"));
+        return conteo;
+    }
 }

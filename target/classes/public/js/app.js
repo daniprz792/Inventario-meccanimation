@@ -366,6 +366,11 @@ function cambiarVista(idVista) {
     if (idVista === 'vista-auditoria') {
         cargarUltimoConteo();
     }
+
+    // al entrar al historial, trae todos los conteos guardados
+    if (idVista === 'vista-historial') {
+        cargarHistorialConteos();
+    }
 }
 
 // inicio de la auditoria de inventario
@@ -482,18 +487,81 @@ async function cargarUltimoConteo() {
     tabla.innerHTML = escaneados.map(item => `
         <tr>
             <td>${fechaConteo}</td>
-            <td>${item.codigoInventario}</td>
+            <td>${item.codigoInventario ?? item.codigo}</td>
             <td>${item.nombre}</td>
             <td>Escaneado</td>
         </tr>
     `).concat(faltantes.map(item => `
         <tr>
             <td>${fechaConteo}</td>
-            <td>${item.codigoInventario}</td>
+            <td>${item.codigoInventario ?? item.codigo}</td>
             <td>${item.nombre}</td>
             <td>Faltante</td>
         </tr>
     `)).join('');
+}
+
+// trae TODOS los conteos guardados (no solo el ultimo) y arma la tabla resumen del historial
+async function cargarHistorialConteos() {
+    const tbody = document.getElementById('tabla-historial');
+    if (!tbody) return;
+
+    const respuesta = await fetch('/api/conteos');
+    const conteos = await respuesta.json();
+
+    if (conteos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">Todavía no hay conteos guardados</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = conteos.map(conteo => {
+        const fecha = conteo.fechaConteo
+            ? new Date(conteo.fechaConteo).toLocaleString('es-MX', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            })
+            : 'Sin fecha';
+        return `
+            <tr>
+                <td>${fecha}</td>
+                <td>${conteo.totalContados} de ${conteo.totalProductos}</td>
+                <td>
+                    <button class="btn-detalle" onclick='verDetalleConteo(${JSON.stringify(conteo)})'>Ver detalle</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// muestra, en un modal, el detalle completo (codigo, nombre, estado) de un conteo especifico del historial
+function verDetalleConteo(conteo) {
+    const fecha = conteo.fechaConteo
+        ? new Date(conteo.fechaConteo).toLocaleString('es-MX', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        })
+        : 'Sin fecha';
+
+    document.getElementById('historial-detalle-titulo').textContent =
+        `Conteo del ${fecha} — ${conteo.totalContados} de ${conteo.totalProductos} productos`;
+
+    const escaneados = JSON.parse(conteo.escaneados || '[]');
+    const faltantes = JSON.parse(conteo.faltantes || '[]');
+
+    const filasEscaneados = escaneados
+        .map(p => `<tr><td>${p.codigoInventario ?? p.codigo}</td><td>${p.nombre}</td><td class="estado-contado">Escaneado</td></tr>`);
+
+    const filasFaltantes = faltantes
+        .map(p => `<tr><td>${p.codigoInventario ?? p.codigo}</td><td>${p.nombre}</td><td class="estado-faltante">Faltante</td></tr>`);
+
+    document.getElementById('tabla-historial-detalle').innerHTML =
+        filasEscaneados.concat(filasFaltantes).join('');
+
+    document.getElementById('modal-historial-detalle').classList.remove('oculto');
+}
+
+function cerrarHistorialDetalle() {
+    document.getElementById('modal-historial-detalle').classList.add('oculto');
 }
 
 async function finalizarInventario() {
@@ -550,6 +618,15 @@ function cerrarResumen() {
     if (modalResumen) {
         modalResumen.classList.add('oculto');
     }
+
+    // reinicia la vista de finalizar inventario 
+
+    document.getElementById('contador-contenedor').classList.add('oculto');
+    document.getElementById('btn-iniciar-inventario').classList.remove('oculto');
+    document.getElementById('escaner-mensaje').textContent = '';
+    productosParaContar = [];
+    codigosContados = new Set();
+    
 }
 
 async function iniciarInventario() {
@@ -587,4 +664,4 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
 
 verificarSesion();
 
-cambiarVista('vista-menu'); 
+cambiarVista('vista-menu');
