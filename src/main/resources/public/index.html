@@ -19,13 +19,13 @@
     </header>
       <div class="usuario-info">
         <span id="usuario-saludo"></span>
-        <button id="btn-logout" class="btn-eliminar">Cerrar sesión</button>
+        <button id="btn-logout" class="btn-eliminar">Cerrar sesion</button>
     </div>
 </header>
 
     <!-- menu de inicio -->
 <div id="vista-menu" class="vista">
-    <h2>¿Qué vamos a hacer?</h2>
+    <h2>¿Que vamos a hacer?</h2>
     <div class="menu-opciones">
         <button class="nav-btn" onclick="cambiarVista('vista-inventario')"> Ver Inventario</button>
         <button class="nav-btn" onclick="cambiarVista('vista-auditoria')"> Hacer Inventario</button>
@@ -33,7 +33,7 @@
 </div>
 
 <!-- boton para volver al menu, visible dentro de las otras vistas -->
-<button id="btn-volver-menu" class="btn-volver oculto" onclick="cambiarVista('vista-menu')"> Menú</button>
+<button id="btn-volver-menu" class="btn-volver oculto" onclick="cambiarVista('vista-menu')"> Menu</button>
 
     <div class="seccion-logo">
         <img src="css/img/favicon.png" alt="logo">
@@ -74,17 +74,16 @@
  
 <div id="vista-auditoria" class="vista oculto">
     <h2>Hacer Inventario</h2>
-    <p>Presiona "Iniciar Inventario" y escanea cada producto para contarlo</p>
 
     <!-- resumen y tabla del ultimo conteo guardado en la base de datos -->
     <div class="ultimo-conteo-contenedor">
-        <h3>Último inventario realizado</h3>
+        <h3>Ultimo inventario realizado</h3>
         <p id="ultimo-conteo-texto" class="contador-texto"></p>
 
         <div class="auditoria-tabla-wrap">
             <table class="tabla-inventario">
                 <thead>
-                    <tr><th>Fecha</th><th>Código</th><th>Nombre</th><th>Estado</th></tr>
+                    <tr><th>Fecha</th><th>Codigo</th><th>Nombre</th><th>Estado</th></tr>
                 </thead>
                 <tbody id="tabla-ultimo-conteo"></tbody>
             </table>

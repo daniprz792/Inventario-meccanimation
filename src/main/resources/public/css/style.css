@@ -431,7 +431,7 @@ h2 {
  display: none;
 }
 .modal-contenido {
- background: var(--azul-oscuro);
+ background: var(--azul-claro);
  border-radius: 1rem;
  padding: 2.5rem;
  max-width: 500px;
@@ -442,7 +442,7 @@ h2 {
  overflow-y: auto; /* por si el contenido es mas alto que la pantalla */
 }
 .modal-contenido h3 {
- color: var(--naranja);
+ color: var(--blanco);
  margin-top: 0;
 }
 .modal-contenido img {
@@ -510,7 +510,7 @@ h2 {
 
 /* modal: resumen de auditoria */
 #resumen-faltantes-contenedor h4 {
- color: var(--naranja);
+ color: var(--blanco);
  margin-bottom: 0.8rem;
 }
 #resumen-lista-faltantes {
@@ -556,7 +556,7 @@ h2 {
 .contador-texto {
  font-size: 2rem;
  font-weight: bold;
- color: var(--blanco);
+ color: var(--naranja);
  margin: 3rem 0 1rem;
 }
 
