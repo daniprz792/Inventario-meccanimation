@@ -45,6 +45,8 @@
 
     <div class="seccion-acciones">
         <button id="btn-abrir-modal" class="btn-guardar">+ Agregar Producto</button>
+        <button type="button" class="btn-guardar"
+                onclick="window.location.href='/api/inventario/excel'">Descargar Excel</button>
     </div>
 
     <div class="seccion-busqueda"> 
@@ -106,12 +108,12 @@
 
     <div class="auditoria-resultados">
 
-        <div class="auditoria-columna">
+                <div class="auditoria-columna">
             <h3>Escaneados (<span id="contador-escaneados">0</span>)</h3>
             <div class="auditoria-tabla-wrap">
                 <table class="tabla-inventario">
                     <thead>
-                        <tr><th>Código</th><th>Nombre</th></tr>
+                        <tr><th>Código</th><th>Nombre</th><th></th></tr>
                     </thead>
                     <tbody id="tabla-escaneados"></tbody>
                 </table>

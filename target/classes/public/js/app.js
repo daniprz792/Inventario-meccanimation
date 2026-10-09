@@ -386,6 +386,24 @@ if (inputEscaner) {
     });
 }
 
+function quitarEscaneo(codigo) {
+    if (!codigosContados.delete(codigo)) return;
+
+    const producto = productosParaContar.find(item => String(item.codigoInventario) === codigo);
+    mostrarMensajeEscaner(`Quitado: ${producto ? producto.nombre : codigo}`);
+    renderAuditoriaTablas();
+    document.getElementById('inputEscaner').focus();
+}
+
+// un solo listener para todos los botones "Quitar" (las filas se regeneran en cada render)
+const tablaEscaneadosEl = document.getElementById('tabla-escaneados');
+if (tablaEscaneadosEl) {
+    tablaEscaneadosEl.addEventListener('click', (e) => {
+        const boton = e.target.closest('button[data-codigo]');
+        if (boton) quitarEscaneo(boton.dataset.codigo);
+    });
+}
+
 function renderAuditoriaTablas() {
     const tablaEscaneados = document.getElementById('tabla-escaneados');
     const tablaFaltantes = document.getElementById('tabla-faltantes');
@@ -399,6 +417,10 @@ function renderAuditoriaTablas() {
         <tr>
             <td>${item.codigoInventario}</td>
             <td>${item.nombre}</td>
+            <td>
+                <button type="button" class="btn-eliminar"
+                        data-codigo="${String(item.codigoInventario).replace(/"/g, '&quot;')}">Quitar</button>
+            </td>
         </tr>
     `).join('');
 
