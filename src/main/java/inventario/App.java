@@ -1,17 +1,18 @@
 package inventario;
 
 import io.javalin.Javalin;
+import io.javalin.http.UnauthorizedResponse;
 import io.javalin.http.staticfiles.Location;
+import inventario.routes.CategoriaRoutes;
+import inventario.routes.ConteoRoutes;
+import inventario.routes.ExportRoutes;
 import inventario.routes.ItemRoutes;
+import inventario.routes.LoginRoutes;
+import inventario.routes.UnidadRoutes;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import inventario.routes.CategoriaRoutes;
-import inventario.routes.UnidadRoutes;
-import inventario.routes.ConteoRoutes;
-
-import inventario.routes.LoginRoutes;
-import io.javalin.http.UnauthorizedResponse;
 
 public class App {
     public static void main(String[] args) throws IOException {
@@ -32,26 +33,27 @@ public class App {
                 staticFiles.location = Location.EXTERNAL;
             });
         });
-        
+
+        // protege TODAS las rutas /api/* excepto /api/login, para que nadie pueda
+        // crear/editar/eliminar/importar sin haber iniciado sesión primero
+        app.before("/api/*", ctx -> {
+            if (ctx.path().equals("/api/login")) return;
+            Object nombre = ctx.req().getSession().getAttribute("usuarioNombre");
+            if (nombre == null) {
+                throw new UnauthorizedResponse("No autenticado");
+            }
+        });
+
         app.get("/", ctx -> ctx.redirect("/index.html"));
+
+        LoginRoutes.registrar(app);
         ConteoRoutes.registrar(app);
         ItemRoutes.registrar(app);
         CategoriaRoutes.registrar(app);
         UnidadRoutes.registrar(app);
+        ExportRoutes.registrar(app);
+
         app.start(7000);
-
-
-        LoginRoutes.registrar(app);
-
-    // protege TODAS las rutas /api/* excepto /api/login, para que nadie pueda
-    // crear/editar/eliminar productos sin haber iniciado sesión primero
-    app.before("/api/*", ctx -> {
-    if (ctx.path().equals("/api/login")) return;
-    Object nombre = ctx.req().getSession().getAttribute("usuarioNombre");
-    if (nombre == null) {
-        throw new UnauthorizedResponse("No autenticado");
-    }
-});
     }
 }
 

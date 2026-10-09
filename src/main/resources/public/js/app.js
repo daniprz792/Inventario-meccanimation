@@ -366,6 +366,10 @@ function cambiarVista(idVista) {
     if (idVista === 'vista-auditoria') {
         cargarUltimoConteo();
     }
+
+    if (idVista === 'vista-historial') {
+        cargarHistorialConteos();
+    }
 }
 
 // inicio de la auditoria de inventario
@@ -430,7 +434,12 @@ function registrarEscaneo() {
         return;
     }
 
-    const producto = productosParaContar.find(item => String(item.codigoInventario) === codigo);
+    // compara sin importar mayúsculas/minúsculas
+    const codigoBuscado = codigo.toLowerCase();
+    const producto = productosParaContar.find(
+        item => String(item.codigoInventario).trim().toLowerCase() === codigoBuscado
+    );
+
     if (!producto) {
         mostrarMensajeEscaner(`No existe el producto con código ${codigo}`);
         inputEscaner.value = '';
@@ -438,14 +447,17 @@ function registrarEscaneo() {
         return;
     }
 
-    if (codigosContados.has(codigo)) {
+    // se guarda el código REAL del producto, no lo que escribió el usuario
+    const codigoReal = String(producto.codigoInventario);
+
+    if (codigosContados.has(codigoReal)) {
         mostrarMensajeEscaner(`El producto ${producto.nombre} ya fue escaneado`);
         inputEscaner.value = '';
         inputEscaner.focus();
         return;
     }
 
-    codigosContados.add(codigo);
+    codigosContados.add(codigoReal);
     mostrarMensajeEscaner(`Escaneado: ${producto.nombre}`);
     inputEscaner.value = '';
     inputEscaner.focus();
@@ -482,18 +494,120 @@ async function cargarUltimoConteo() {
     tabla.innerHTML = escaneados.map(item => `
         <tr>
             <td>${fechaConteo}</td>
-            <td>${item.codigoInventario}</td>
+            <td>${item.codigoInventario ?? item.codigo}</td>
             <td>${item.nombre}</td>
             <td>Escaneado</td>
         </tr>
     `).concat(faltantes.map(item => `
         <tr>
             <td>${fechaConteo}</td>
-            <td>${item.codigoInventario}</td>
+            <td>${item.codigoInventario ?? item.codigo}</td>
             <td>${item.nombre}</td>
             <td>Faltante</td>
         </tr>
     `)).join('');
+}
+
+async function cargarHistorialConteos() {
+    const tbody = document.getElementById('tabla-historial');
+    if (!tbody) return;
+
+    try {
+        const respuesta = await fetch('/api/conteos');
+        if (!respuesta.ok) {
+            throw new Error(`No se pudo cargar el historial: ${respuesta.status}`);
+        }
+
+        const conteos = await respuesta.json();
+        tbody.replaceChildren();
+
+        if (conteos.length === 0) {
+            const fila = tbody.insertRow();
+            const celda = fila.insertCell();
+            celda.colSpan = 3;
+            celda.textContent = 'Todavia no hay conteos guardados';
+            return;
+        }
+
+        conteos.forEach(conteo => {
+            const fila = tbody.insertRow();
+            const fecha = conteo.fechaConteo
+                ? new Date(conteo.fechaConteo).toLocaleString('es-MX', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+                : 'Sin fecha';
+
+            fila.insertCell().textContent = fecha;
+            fila.insertCell().textContent = `${conteo.totalContados} de ${conteo.totalProductos}`;
+
+            const acciones = fila.insertCell();
+            const botonDetalle = document.createElement('button');
+            botonDetalle.type = 'button';
+            botonDetalle.className = 'btn-detalle';
+            botonDetalle.textContent = 'Ver detalle';
+            botonDetalle.addEventListener('click', () => verDetalleConteo(conteo));
+            acciones.appendChild(botonDetalle);
+
+
+            // NUEVO: descarga el conteo como Excel
+            const botonExcel = document.createElement('button');
+            botonExcel.type = 'button';
+            botonExcel.className = 'btn-detalle';
+            botonExcel.textContent = 'Descargar Excel';
+            botonExcel.addEventListener('click', () => {
+                window.location.href = `/api/conteos/${conteo.id}/excel`;
+            });
+            acciones.appendChild(botonExcel);
+
+
+        });
+    } catch (error) {
+        tbody.replaceChildren();
+        const fila = tbody.insertRow();
+        const celda = fila.insertCell();
+        celda.colSpan = 3;
+        celda.textContent = 'No se pudo cargar el historial. Intenta de nuevo.';
+        console.error(error);
+    }
+}
+
+function verDetalleConteo(conteo) {
+    const fecha = conteo.fechaConteo
+        ? new Date(conteo.fechaConteo).toLocaleString('es-MX', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        : 'Sin fecha';
+
+    document.getElementById('historial-detalle-titulo').textContent =
+        `Conteo del ${fecha} — ${conteo.totalContados} de ${conteo.totalProductos} productos`;
+
+    const tbody = document.getElementById('tabla-historial-detalle');
+    tbody.replaceChildren();
+
+    const escaneados = JSON.parse(conteo.escaneados || '[]');
+    const faltantes = JSON.parse(conteo.faltantes || '[]');
+    [...escaneados.map(item => ({ item, estado: 'Escaneado' })),
+        ...faltantes.map(item => ({ item, estado: 'Faltante' }))]
+        .forEach(({ item, estado }) => {
+            const fila = tbody.insertRow();
+            fila.insertCell().textContent = item.codigoInventario ?? item.codigo ?? '';
+            fila.insertCell().textContent = item.nombre || '';
+            fila.insertCell().textContent = estado;
+        });
+
+    document.getElementById('modal-historial-detalle').classList.remove('oculto');
+}
+
+function cerrarHistorialDetalle() {
+    document.getElementById('modal-historial-detalle').classList.add('oculto');
 }
 
 async function finalizarInventario() {
@@ -550,6 +664,12 @@ function cerrarResumen() {
     if (modalResumen) {
         modalResumen.classList.add('oculto');
     }
+
+    document.getElementById('contador-contenedor').classList.add('oculto');
+    document.getElementById('btn-iniciar-inventario').classList.remove('oculto');
+    document.getElementById('escaner-mensaje').textContent = '';
+    productosParaContar = [];
+    codigosContados = new Set();
 }
 
 async function iniciarInventario() {
@@ -587,4 +707,4 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
 
 verificarSesion();
 
-cambiarVista('vista-menu'); 
+cambiarVista('vista-menu');

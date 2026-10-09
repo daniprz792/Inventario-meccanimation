@@ -168,7 +168,7 @@ h2 {
  border: 2px solid transparent;
  border-radius: 2rem;
  cursor: pointer;
- background: var(--azul-claro);
+ background: var(--naranja);
  color: var(--blanco);
  transition: border-color 0.2s ease, background 0.2s ease;
 }

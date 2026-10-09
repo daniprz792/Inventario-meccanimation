@@ -29,6 +29,7 @@
     <div class="menu-opciones">
         <button class="nav-btn" onclick="cambiarVista('vista-inventario')"> Ver Inventario</button>
         <button class="nav-btn" onclick="cambiarVista('vista-auditoria')"> Hacer Inventario</button>
+        <button class="nav-btn" onclick="cambiarVista('vista-historial')"> Historial de Conteos</button>
     </div>
 </div>
 
@@ -130,6 +131,20 @@
         </div>
     </div>
 </div>
+</div>
+
+<!-- vista con el historial de todos los conteos guardados -->
+<div id="vista-historial" class="vista oculto">
+    <h2>Historial de Conteos</h2>
+
+    <div class="auditoria-tabla-wrap">
+        <table class="tabla-inventario">
+            <thead>
+                <tr><th>Fecha</th><th>Resultado</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="tabla-historial"></tbody>
+        </table>
+    </div>
 </div>
 
     <!-- modal con el formulario de agregar/editar producto -->
@@ -280,7 +295,23 @@
     </div>
 </div>
 
+    <!-- modal con el detalle completo de un conteo del historial -->
+    <div id="modal-historial-detalle" class="modal oculto">
+        <div class="modal-contenido">
+            <button class="modal-cerrar" onclick="cerrarHistorialDetalle()">&times;</button>
+            <h3 id="historial-detalle-titulo"></h3>
+
+            <div class="auditoria-tabla-wrap">
+                <table class="tabla-inventario">
+                    <thead>
+                        <tr><th>Codigo</th><th>Nombre</th><th>Estado</th></tr>
+                    </thead>
+                    <tbody id="tabla-historial-detalle"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script src="js/app.js"></script>
 </body>
 </html>
-
