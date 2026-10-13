@@ -4,7 +4,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class GenerarHash {
     public static void main(String[] args) {
-        String passwordPlano = "inventario2026"; // toca cambiarla
+        String passwordPlano = "inventario2026"; // contraseña data base 
         String hash = BCrypt.hashpw(passwordPlano, BCrypt.gensalt());
         System.out.println(hash);
     }

@@ -7,7 +7,7 @@ const formTitulo = document.getElementById('form-titulo');
 const btnAbrirModal = document.getElementById('btn-abrir-modal');
 const selectCategoria = document.getElementById('idCategoria');
 
-//  modal de confirmacion reutilizable (reemplaza confirm()) 
+//  modal de confirmacion reutilizable (reemplaza confirm())
 
 const modalConfirmacion = document.getElementById('modal-confirmacion');
 const confirmacionMensaje = document.getElementById('confirmacion-mensaje');
@@ -209,7 +209,6 @@ async function eliminarItem(id) {
     }
     await cargarItems();
 }
-
 
 // ver imagen 
 function verDetalle(item) {
