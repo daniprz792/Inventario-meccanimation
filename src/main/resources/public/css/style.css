@@ -396,8 +396,6 @@ h2 {
  background-position: right 1rem center;
  background-size: 1.2rem;
  padding-right: 3rem;
- /* flechita blanca dibujada con SVG, para reemplazar la del navegador */
- background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M7 10l5 5 5-5z'/></svg>");
 }
 .select-estado option {
  color: var(--negro);

@@ -88,4 +88,4 @@ public class App {
      // Consulta los registros actuales y los muestra en la salida de la consola.
     //dao.listarItems();
 
-   
+    

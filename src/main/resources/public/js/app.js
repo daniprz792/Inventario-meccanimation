@@ -1,3 +1,5 @@
+// variables iniciales
+
 // conecta el html con la api de java
 
 const modalForm = document.getElementById('modal-form');
@@ -15,6 +17,7 @@ const btnConfirmacionCancelar = document.getElementById('confirmacion-cancelar')
 // muestra el modal con el mensaje dado y devuelve una Promise<boolean>:
 
 // true si el usuario acepta, false si cancela o cierra el modal
+
 function mostrarConfirmacion(mensaje) {
     confirmacionMensaje.textContent = mensaje;
     modalConfirmacion.classList.remove('oculto');
@@ -65,6 +68,7 @@ async function cargarCategorias(idSeleccionado) {
         selectCategoria.value = idSeleccionado;
     }
 }
+
 
 const modalCategoria = document.getElementById('modal-categoria');
 const inputNuevaCategoria = document.getElementById('nombreNuevaCategoria');
@@ -139,7 +143,7 @@ function filtrarTabla() {
 
 inputBuscar.addEventListener('input', filtrarTabla);
 
-//  tabla de productos
+//  tabla de productos cargar productos y mostrar en tabla
 async function cargarItems() {
     const respuesta = await fetch('/api/items');
     const items = await respuesta.json();
@@ -172,7 +176,10 @@ async function cargarItems() {
 
     filtrarTabla(); // reaplica el filtro activo despues de recargar la tabla
 }
+// editar producto 
 
+// llena el formulario con los datos existentes 
+// y despues ebre el modal
 async function editarItem(item) {
     document.getElementById('itemId').value = item.id;
     document.getElementById('codigoInventario').value = item.codigoInventario;
@@ -190,6 +197,8 @@ async function editarItem(item) {
     modalForm.classList.remove('oculto');
 }
 
+
+//  eliminar item 
 async function eliminarItem(id) {
     const confirmado = await mostrarConfirmacion('¿Seguro que quieres eliminar este producto?');
     if (!confirmado) return;
@@ -201,6 +210,8 @@ async function eliminarItem(id) {
     await cargarItems();
 }
 
+
+// ver imagen 
 function verDetalle(item) {
     const img = document.getElementById('detalle-imagen');
     if (item.foto) {
@@ -368,11 +379,12 @@ function cambiarVista(idVista) {
     }
 
     if (idVista === 'vista-historial') {
-        cargarHistorialConteos();
+        cargarHistorialConteos(); // muestra todos los conteos guardados en la base de datos
     }
 }
 
-// inicio de la auditoria de inventario
+// inicio de hacer el escaneo de inventario
+
 let productosParaContar = [];
 let codigosContados = new Set();
 const inputEscaner = document.getElementById('inputEscaner');
@@ -446,6 +458,8 @@ function mostrarMensajeEscaner(mensaje) {
     elemento.textContent = mensaje;
 }
 
+
+// registrar escaneado 
 function registrarEscaneo() {
     const inputEscaner = document.getElementById('inputEscaner');
     if (!inputEscaner || productosParaContar.length === 0) return;
@@ -486,6 +500,8 @@ function registrarEscaneo() {
     renderAuditoriaTablas();
 }
 
+
+// ULTIMO inventario realizado 
 async function cargarUltimoConteo() {
     const texto = document.getElementById('ultimo-conteo-texto');
     const tabla = document.getElementById('tabla-ultimo-conteo');
@@ -579,9 +595,9 @@ async function cargarHistorialConteos() {
             const botonExcel = document.createElement('button');
             botonExcel.type = 'button';
             botonExcel.className = 'btn-detalle';
-            botonExcel.textContent = 'Descargar Excel';
+            botonExcel.textContent = 'Descargar Excel'; // se genera un archivo con apache poi 
             botonExcel.addEventListener('click', () => {
-                window.location.href = `/api/conteos/${conteo.id}/excel`;
+                window.location.href = `/api/conteos/${conteo.id}/excel`; // este se llama 
             });
             acciones.appendChild(botonExcel);
 
@@ -631,6 +647,9 @@ function verDetalleConteo(conteo) {
 function cerrarHistorialDetalle() {
     document.getElementById('modal-historial-detalle').classList.add('oculto');
 }
+
+
+// finalizar inventario y guardar en base de datos
 
 async function finalizarInventario() {
     if (!productosParaContar.length) {
@@ -694,8 +713,11 @@ function cerrarResumen() {
     codigosContados = new Set();
 }
 
+
+// iniciar inventario 
+
 async function iniciarInventario() {
-    const respuesta = await fetch('/api/items');
+    const respuesta = await fetch('/api/items'); // carga todos los productos que deben contarse 
     if (!respuesta.ok) {
         throw new Error(`No se pudieron cargar los productos: ${respuesta.status}`);
     }
@@ -729,4 +751,4 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
 
 verificarSesion();
 
-cambiarVista('vista-menu');
+cambiarVista('vista-menu'); 
