@@ -145,7 +145,7 @@ h2 {
 
 /* logo */
 .seccion-logo {
- margin: 2rem 0;
+ margin: 0 0 1rem;
 }
 .seccion-logo img {
  width: 8rem;
@@ -212,6 +212,10 @@ h2 {
  color: var(--blanco);
  z-index: 50;
 }
+.btn-logout {
+ left: auto;
+ right: 2rem;
+}
 .btn-volver:hover {
  background: var(--naranja);
 }
@@ -267,6 +271,9 @@ h2 {
  cursor: pointer;
  background: var(--naranja);
  color: var(--blanco);
+ border-radius: 2rem;
+ margin-top: 2rem;
+ 
 }
 .btn-guardar:hover {
  background: var(--naranja-hover);
@@ -326,6 +333,16 @@ h2 {
  background: var(--azul-transparente);
 }
 
+/* botones de acciones: en fila, con separacion */
+.acciones-celda {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 0.6rem;
+}
+#vista-inventario .tabla-inventario th:last-child {
+ width: 28rem; /* la columna de acciones necesita mas ancho que las demas */
+}
+
 /* barra de busqueda */
 .seccion-busqueda {
  max-width: 70rem;
@@ -360,6 +377,8 @@ h2 {
  background: var(--azul-claro);
  border-radius: 2rem;
  overflow: hidden;
+ width: 100%;
+ table-layout: fixed; /* evita que las columnas se compriman demasiado */
 }
 .tabla-inventario th,
 .tabla-inventario td {
@@ -594,6 +613,88 @@ h2 {
  overflow-y: auto;
  border-radius: 1.5rem;
 }
+.auditoria-tabla-wrap .tabla-inventario thead th {
+ position: sticky;
+ top: 0;
+ z-index: 1;
+}
+
+/* la vista de auditoria es mas ancha para que quepa el boton "Quitar" */
+#vista-auditoria {
+ max-width: 80rem;
+}
+.auditoria-columna:first-child .tabla-inventario th:last-child,
+.auditoria-columna:first-child .tabla-inventario td:last-child {
+ width: 9rem;
+ text-align: center;
+}
+
+/* historial de conteos */
+#vista-historial .auditoria-tabla-wrap {
+ max-height: none;
+ max-width: 100%;
+ margin-inline: auto;
+ overflow-x: auto;
+ -webkit-overflow-scrolling: touch;
+}
+#vista-historial .tabla-inventario {
+ width: 100%;
+ min-width: 0;
+ max-width: 100rem;
+ margin-inline: auto;
+ table-layout: fixed;
+}
+
+/* las tres columnas centradas */
+#vista-historial .tabla-inventario th,
+#vista-historial .tabla-inventario td {
+ padding: 1.3rem 1.4rem;
+ font-size: 1.5rem;
+ line-height: 1.4;
+ text-align: center;
+ white-space: nowrap;
+}
+
+/* anchos repartidos segun el contenido */
+#vista-historial .tabla-inventario th:first-child,
+#vista-historial .tabla-inventario td:first-child {
+ width: 32%;
+}
+#vista-historial .tabla-inventario th:nth-child(2),
+#vista-historial .tabla-inventario td:nth-child(2) {
+ width: 20%;
+}
+#vista-historial .tabla-inventario th:last-child,
+#vista-historial .tabla-inventario td:last-child {
+ width: 48%;
+ white-space: normal; /* si los botones no caben, bajan a otra linea */
+}
+
+/* botones del historial */
+#vista-historial .btn-detalle:first-of-type {
+ margin-right: 0;
+}
+#vista-historial .btn-detalle {
+ font-size: 1.3rem;
+ padding: 0.7rem 1.4rem;
+ margin: 0.3rem 0.4rem;
+ border-radius: 2rem;
+ min-width: 0;
+ white-space: nowrap;
+}
+
+/* botones del historial */
+#vista-historial .btn-detalle:first-of-type {
+ margin-right: 0;
+}
+#vista-historial .btn-detalle {
+ font-size: 1.1rem;
+ padding: 0.45rem 0.85rem;
+ margin: 0.2rem 0.25rem;
+ border-radius: 1.6rem;
+ min-width: 0;
+ white-space: nowrap;
+}
 
 /* utilidades */
 .oculto {
@@ -658,6 +759,10 @@ h2 {
  .auditoria-resultados {
  flex-direction: column;
  }
+
+ #vista-historial .tabla-inventario {
+ min-width: 56rem;
+ }
 }
 
 /* responsive celulares */
@@ -701,4 +806,3 @@ h2 {
  max-height: 140px;
  }
 }
-

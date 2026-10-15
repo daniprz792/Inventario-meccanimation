@@ -36,6 +36,18 @@ function mostrarConfirmacion(mensaje) {
     });
 }
 
+//  función para escapar texto y prevenir inyecciones de HTML
+
+function escapar(texto) {
+    return String(texto ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+
 //  categorias 
 
 async function cargarCategorias(idSeleccionado) {
@@ -144,42 +156,54 @@ function filtrarTabla() {
 inputBuscar.addEventListener('input', filtrarTabla);
 
 //  tabla de productos cargar productos y mostrar en tabla
+function crearBoton(texto, clase, onClick) {
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = clase;
+    boton.textContent = texto;
+    boton.addEventListener('click', onClick);
+    return boton;
+}
+
 async function cargarItems() {
     const respuesta = await fetch('/api/items');
     const items = await respuesta.json();
 
     const tbody = document.getElementById('tabla-items');
-    tbody.innerHTML = '';
+    tbody.replaceChildren();
+
     items.forEach(item => {
-        const fila = document.createElement('tr');
+        const fila = tbody.insertRow();
+        const precio = Number(item.precioUnitario);
 
-        /*const botonUnidades = item.requiereUnidades
-            ? `<button class="btn-detalle" onclick="abrirUnidades(${item.id}, '${item.nombre}')">Ver unidades</button>`
-            : `<span style="opacity:.5">N/A</span>`;*/
+        [
+            item.codigoInventario,
+            item.nombreCategoria,
+            item.nombre,
+            Number.isFinite(precio) ? '$' + precio.toLocaleString() : '',
+            item.descripcion || 'Sin descripción',
+            item.notas || 'Sin observaciones',
+            item.fechaCompra || 'No registrada'
+        ].forEach(valor => { fila.insertCell().textContent = valor ?? ''; });
 
-        fila.innerHTML = `
-            <td>${item.codigoInventario}</td>
-            <td>${item.nombreCategoria}</td>
-            <td>${item.nombre}</td>
-            <td>$${item.precioUnitario.toLocaleString()}</td>
-            <td>${item.descripcion || 'Sin descripción'}</td>
-            <td>${item.notas || 'Sin observaciones'}</td>
-            <td>${item.fechaCompra || 'No registrada'}</td>
-            <td>
-                <button class="btn-detalle" onclick='verDetalle(${JSON.stringify(item)})'>Ver imagen</button>
-                <button class="btn-editar" onclick='editarItem(${JSON.stringify(item)})'>Editar</button>
-                <button class="btn-eliminar" onclick="eliminarItem(${item.id})">Eliminar</button>
-            </td>
-        `;
-        tbody.appendChild(fila);
+                const acciones = fila.insertCell();
+        const grupo = document.createElement('div');
+        grupo.className = 'acciones-celda';
+        grupo.append(
+            crearBoton('Ver imagen', 'btn-detalle', () => verDetalle(item)),
+            crearBoton('Editar', 'btn-editar', () => editarItem(item)),
+            crearBoton('Eliminar', 'btn-eliminar', () => eliminarItem(item.id))
+        );
+        acciones.appendChild(grupo);
     });
 
     filtrarTabla(); // reaplica el filtro activo despues de recargar la tabla
 }
+
 // editar producto 
 
 // llena el formulario con los datos existentes 
-// y despues ebre el modal
+// y despues abre el modal
 async function editarItem(item) {
     document.getElementById('itemId').value = item.id;
     document.getElementById('codigoInventario').value = item.codigoInventario;
@@ -298,7 +322,7 @@ async function cargarUnidades(idProducto) {
     unidades.forEach(unidad => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
-            <td>${unidad.codigoUnidad}</td>
+            <td>${escapar(unidad.codigoUnidad)}</td>
             <td>
                 <select class="select-estado estado-${unidad.estado}"
                         onchange="cambiarEstadoUnidad(${unidad.id}, this.value, ${idProducto}); actualizarColorEstado(this);">
@@ -397,6 +421,7 @@ if (inputEscaner) {
     });
 }
 
+// quita un producto de los escaneados (vuelve a faltantes)
 function quitarEscaneo(codigo) {
     if (!codigosContados.delete(codigo)) return;
 
@@ -426,19 +451,19 @@ function renderAuditoriaTablas() {
 
     tablaEscaneados.innerHTML = escaneados.map(item => `
         <tr>
-            <td>${item.codigoInventario}</td>
-            <td>${item.nombre}</td>
+            <td>${escapar(item.codigoInventario)}</td>
+            <td>${escapar(item.nombre)}</td>
             <td>
                 <button type="button" class="btn-eliminar"
-                        data-codigo="${String(item.codigoInventario).replace(/"/g, '&quot;')}">Quitar</button>
+                        data-codigo="${escapar(item.codigoInventario)}">Quitar</button>
             </td>
         </tr>
     `).join('');
 
     tablaFaltantes.innerHTML = faltantes.map(item => `
         <tr>
-            <td>${item.codigoInventario}</td>
-            <td>${item.nombre}</td>
+            <td>${escapar(item.codigoInventario)}</td>
+            <td>${escapar(item.nombre)}</td>
         </tr>
     `).join('');
 
@@ -451,12 +476,13 @@ function renderAuditoriaTablas() {
     }
 }
 
-function mostrarMensajeEscaner(mensaje) {
+// muestra un mensaje bajo el escaner; "tipo" aplica el color: ok, error o repetido
+function mostrarMensajeEscaner(mensaje, tipo = '') {
     const elemento = document.getElementById('escaner-mensaje');
     if (!elemento) return;
     elemento.textContent = mensaje;
+    elemento.className = 'escaner-mensaje' + (tipo ? ' ' + tipo : '');
 }
-
 
 // registrar escaneado 
 function registrarEscaneo() {
@@ -465,7 +491,7 @@ function registrarEscaneo() {
 
     const codigo = inputEscaner.value.trim();
     if (!codigo) {
-        mostrarMensajeEscaner('Ingresa un código antes de presionar Enter');
+        mostrarMensajeEscaner('Ingresa un código antes de presionar Enter', 'error');
         return;
     }
 
@@ -476,7 +502,7 @@ function registrarEscaneo() {
     );
 
     if (!producto) {
-        mostrarMensajeEscaner(`No existe el producto con código ${codigo}`);
+        mostrarMensajeEscaner(`No existe el producto con código ${codigo}`, 'error');
         inputEscaner.value = '';
         inputEscaner.focus();
         return;
@@ -486,14 +512,14 @@ function registrarEscaneo() {
     const codigoReal = String(producto.codigoInventario);
 
     if (codigosContados.has(codigoReal)) {
-        mostrarMensajeEscaner(`El producto ${producto.nombre} ya fue escaneado`);
+        mostrarMensajeEscaner(`El producto ${producto.nombre} ya fue escaneado`, 'repetido');
         inputEscaner.value = '';
         inputEscaner.focus();
         return;
     }
 
     codigosContados.add(codigoReal);
-    mostrarMensajeEscaner(`Escaneado: ${producto.nombre}`);
+    mostrarMensajeEscaner(`Escaneado: ${producto.nombre}`, 'ok');
     inputEscaner.value = '';
     inputEscaner.focus();
     renderAuditoriaTablas();
@@ -528,21 +554,20 @@ async function cargarUltimoConteo() {
         : 'Sin fecha';
 
     texto.textContent = `Último inventario: ${fechaConteo} — ${conteo.totalContados} de ${conteo.totalProductos} productos contabilizados`;
-    tabla.innerHTML = escaneados.map(item => `
+
+    const filas = [
+        ...escaneados.map(item => ({ item, estado: 'Escaneado' })),
+        ...faltantes.map(item => ({ item, estado: 'Faltante' }))
+    ];
+
+    tabla.innerHTML = filas.map(({ item, estado }) => `
         <tr>
-            <td>${fechaConteo}</td>
-            <td>${item.codigoInventario ?? item.codigo}</td>
-            <td>${item.nombre}</td>
-            <td>Escaneado</td>
+            <td>${escapar(fechaConteo)}</td>
+            <td>${escapar(item.codigoInventario ?? item.codigo)}</td>
+            <td>${escapar(item.nombre)}</td>
+            <td>${estado}</td>
         </tr>
-    `).concat(faltantes.map(item => `
-        <tr>
-            <td>${fechaConteo}</td>
-            <td>${item.codigoInventario ?? item.codigo}</td>
-            <td>${item.nombre}</td>
-            <td>Faltante</td>
-        </tr>
-    `)).join('');
+    `).join('');
 }
 
 async function cargarHistorialConteos() {
@@ -589,18 +614,15 @@ async function cargarHistorialConteos() {
             botonDetalle.addEventListener('click', () => verDetalleConteo(conteo));
             acciones.appendChild(botonDetalle);
 
-
-            // NUEVO: descarga el conteo como Excel
+            // descarga el conteo como Excel (el archivo lo genera el servidor con Apache POI)
             const botonExcel = document.createElement('button');
             botonExcel.type = 'button';
             botonExcel.className = 'btn-detalle';
-            botonExcel.textContent = 'Descargar Excel'; // se genera un archivo con apache poi 
+            botonExcel.textContent = 'Descargar Excel';
             botonExcel.addEventListener('click', () => {
-                window.location.href = `/api/conteos/${conteo.id}/excel`; // este se llama 
+                window.location.href = `/api/conteos/${conteo.id}/excel`;
             });
             acciones.appendChild(botonExcel);
-
-
         });
     } catch (error) {
         tbody.replaceChildren();
@@ -652,7 +674,7 @@ function cerrarHistorialDetalle() {
 
 async function finalizarInventario() {
     if (!productosParaContar.length) {
-        mostrarMensajeEscaner('Primero inicia el inventario');
+        mostrarMensajeEscaner('Primero inicia el inventario', 'error');
         return;
     }
 
@@ -669,7 +691,7 @@ async function finalizarInventario() {
 
     if (listaFaltantes) {
         listaFaltantes.innerHTML = faltantes.length
-            ? faltantes.map(item => `<li>${item.codigoInventario} — ${item.nombre}</li>`).join('')
+            ? faltantes.map(item => `<li>${escapar(item.codigoInventario)} — ${escapar(item.nombre)}</li>`).join('')
             : '<li>Sin faltantes</li>';
     }
 
@@ -707,7 +729,7 @@ function cerrarResumen() {
 
     document.getElementById('contador-contenedor').classList.add('oculto');
     document.getElementById('btn-iniciar-inventario').classList.remove('oculto');
-    document.getElementById('escaner-mensaje').textContent = '';
+    mostrarMensajeEscaner(''); // limpia el texto y el color del mensaje
     productosParaContar = [];
     codigosContados = new Set();
 }
@@ -750,4 +772,4 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
 
 verificarSesion();
 
-cambiarVista('vista-menu'); 
+cambiarVista('vista-menu');

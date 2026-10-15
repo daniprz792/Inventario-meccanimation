@@ -72,7 +72,7 @@ public class App {
         // actualizar
 
         // item.setId(4);
-        // item.setNombre("LG 27 pulgadas");
+        // item.setNombre("LG 27 pulgadas");            
         // ItemDAO dao = new ItemDAO();
         // dao.actualizarItem(item);
 

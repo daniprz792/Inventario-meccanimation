@@ -7,147 +7,146 @@
     <title>Inventario Meccanimation</title>
     <link rel="icon" type="image/png" href="css/img/favicon.png">
 
-
-    <link rel="stylesheet" href="css/style.css">
+    <!-- normalize primero, para que style.css pueda sobrescribirlo -->
     <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
     <header class="cabecera">
-        <h1>Inventario Meccanimation</h1>
+        <h1>Inventario de Activos</h1>
+        <div class="usuario-info">
+            <span id="usuario-saludo"></span>
+            <button id="btn-logout" class="btn-volver btn-logout">Salir</button>
+        </div>
     </header>
-      <div class="usuario-info">
-        <span id="usuario-saludo"></span>
-        <button id="btn-logout" class="btn-eliminar">Cerrar sesion</button>
-    </div>
-</header>
 
     <!-- menu de inicio -->
-<div id="vista-menu" class="vista">
-    <h2>¿Que vamos a hacer?</h2>
-    <div class="menu-opciones">
-        <button class="nav-btn" onclick="cambiarVista('vista-inventario')"> Ver Inventario</button>
-        <button class="nav-btn" onclick="cambiarVista('vista-auditoria')"> Hacer Inventario</button>
-        <button class="nav-btn" onclick="cambiarVista('vista-historial')"> Historial de Conteos</button>
-    </div>
-</div>
-
-<!-- boton para volver al menu, visible dentro de las otras vistas -->
-<button id="btn-volver-menu" class="btn-volver oculto" onclick="cambiarVista('vista-menu')"> Menu</button>
-
-    <div class="seccion-logo">
-        <img src="css/img/favicon.png" alt="logo">
+    <div id="vista-menu" class="vista">
+        <div class="seccion-logo">
+            <img src="css/img/favicon.png" alt="logo">
+        </div>
+        <h2>¿Qué vamos a hacer?</h2>
+        <div class="menu-opciones">
+            <button class="nav-btn" onclick="cambiarVista('vista-inventario')">Ver Inventario</button>
+            <button class="nav-btn" onclick="cambiarVista('vista-auditoria')">Hacer Inventario</button>
+            <button class="nav-btn" onclick="cambiarVista('vista-historial')">Historial de Conteos</button>
+        </div>
     </div>
 
+    <!-- boton para volver al menu, visible dentro de las otras vistas -->
+    <button id="btn-volver-menu" class="btn-volver oculto" onclick="cambiarVista('vista-menu')">Menú</button>
 
- <div id="vista-inventario" class="vista oculto">
+    <!-- vista: inventario (lista de productos) -->
+    <div id="vista-inventario" class="vista oculto">
 
-    <div class="seccion-acciones">
-        <button id="btn-abrir-modal" class="btn-guardar">+ Agregar Producto</button>
-        <button type="button" class="btn-guardar"
-                onclick="window.location.href='/api/inventario/excel'">Descargar Excel</button>
-    </div>
+        <div class="seccion-acciones">
+            <button id="btn-abrir-modal" class="btn-guardar">+ Agregar Producto</button>
+            <!-- descarga todo el inventario en Excel (ruta /api/inventario/excel en ExportRoutes) -->
+            <button type="button" class="btn-guardar"
+                    onclick="window.location.href='/api/inventario/excel'">Descargar Excel</button>
+        </div>
 
-    <div class="seccion-busqueda"> 
-    <input type="text" id="buscarProducto" placeholder="Buscar por código, nombre o categoría...">
-</div>
+        <div class="seccion-busqueda">
+            <input type="text" id="buscarProducto" placeholder="Buscar por código, nombre o categoría...">
+        </div>
 
-    <div class="seccion-tabla">
-        <h2>Inventario</h2>
-
-        <table class="tabla-inventario">
-            <thead>
-                <tr>
-                    <th>Codigo</th>
-                    <th>Categoria</th>
-                    <th>Nombre</th>
-                    <th>Precio</th>
-                    <th>Descripcion</th>
-                    <th>Observaciones</th>
-                    <th>Fecha de compra</th>
-                    <th>Acciones</th>
-                
-                </tr>
-            </thead>
-            <tbody id="tabla-items"></tbody>
-        </table>
-    </div>
- </div>
- 
-<div id="vista-auditoria" class="vista oculto">
-    <h2>Hacer Inventario</h2>
-
-    <!-- resumen y tabla del ultimo conteo guardado en la base de datos -->
-    <div class="ultimo-conteo-contenedor">
-        <h3>Ultimo inventario realizado</h3>
-        <p id="ultimo-conteo-texto" class="contador-texto"></p>
-
-        <div class="auditoria-tabla-wrap">
+        <div class="seccion-tabla">
             <table class="tabla-inventario">
                 <thead>
-                    <tr><th>Fecha</th><th>Codigo</th><th>Nombre</th><th>Estado</th></tr>
+                    <tr>
+                        <th>Código</th>
+                        <th>Categoría</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Descripción</th>
+                        <th>Observaciones</th>
+                        <th>Fecha de compra</th>
+                        <th>Acciones</th>
+                    </tr>
                 </thead>
-                <tbody id="tabla-ultimo-conteo"></tbody>
+                <tbody id="tabla-items"></tbody>
             </table>
         </div>
     </div>
 
-    <button id="btn-iniciar-inventario" class="btn-guardar" onclick="iniciarInventario()">Iniciar Inventario</button>
+    <!-- vista: hacer inventario (escaner) -->
+    <div id="vista-auditoria" class="vista oculto">
+        <h2>Hacer Inventario</h2>
 
-    <div id="contador-contenedor" class="oculto">
-    <p id="contador-texto" class="contador-texto">0 de 0 productos</p>
+        <!-- resumen y tabla del ultimo conteo guardado en la base de datos -->
+        <div class="ultimo-conteo-contenedor">
+            <h3>Último inventario realizado</h3>
+            <p id="ultimo-conteo-texto" class="contador-texto"></p>
 
-    <div class="escaner-contenedor">
-        <input type="text" id="inputEscaner" placeholder="Escanea el código de barras aquí...">
-    </div>
+            <div class="auditoria-tabla-wrap">
+                <table class="tabla-inventario">
+                    <thead>
+                        <tr><th>Fecha</th><th>Código</th><th>Nombre</th><th>Estado</th></tr>
+                    </thead>
+                    <tbody id="tabla-ultimo-conteo"></tbody>
+                </table>
+            </div>
+        </div>
 
-    <p id="escaner-mensaje" class="escaner-mensaje"></p>
+        <button id="btn-iniciar-inventario" class="btn-guardar" onclick="iniciarInventario()">Iniciar Inventario</button>
 
-    <button id="btn-finalizar-inventario" class="btn-eliminar" onclick = finalizarInventario()>Finalizar Inventario</button>
+        <div id="contador-contenedor" class="oculto">
+            <p id="contador-texto" class="contador-texto">0 de 0 productos</p>
 
-    <div class="auditoria-resultados">
+            <div class="escaner-contenedor">
+                <input type="text" id="inputEscaner" placeholder="Escanea el código de barras aquí...">
+            </div>
+
+            <p id="escaner-mensaje" class="escaner-mensaje"></p>
+
+            <button id="btn-finalizar-inventario" class="btn-eliminar" onclick="finalizarInventario()">Finalizar Inventario</button>
+
+            <div class="auditoria-resultados">
 
                 <div class="auditoria-columna">
-            <h3>Escaneados (<span id="contador-escaneados">0</span>)</h3>
-            <div class="auditoria-tabla-wrap">
-                <table class="tabla-inventario">
-                    <thead>
-                        <tr><th>Codigo</th><th>Nombre</th><th></th></tr>
-                    </thead>
-                    <tbody id="tabla-escaneados"></tbody>
-                </table>
-            </div>
-        </div>
+                    <h3>Escaneados (<span id="contador-escaneados">0</span>)</h3>
+                    <div class="auditoria-tabla-wrap">
+                        <table class="tabla-inventario">
+                            <thead>
+                                <!-- la tercera columna es para el boton "Quitar" -->
+                                <tr><th>Código</th><th>Nombre</th><th></th></tr>
+                            </thead>
+                            <tbody id="tabla-escaneados"></tbody>
+                        </table>
+                    </div>
+                </div>
 
-        <div class="auditoria-columna">
-            <h3>Faltantes (<span id="contador-faltantes">0</span>)</h3>
-            <div class="auditoria-tabla-wrap">
-                <table class="tabla-inventario">
-                    <thead>
-                        <tr><th>Codigo</th><th>Nombre</th></tr>
-                    </thead>
-                    <tbody id="tabla-faltantes"></tbody>
-                </table>
+                <div class="auditoria-columna">
+                    <h3>Faltantes (<span id="contador-faltantes">0</span>)</h3>
+                    <div class="auditoria-tabla-wrap">
+                        <table class="tabla-inventario">
+                            <thead>
+                                <tr><th>Código</th><th>Nombre</th></tr>
+                            </thead>
+                            <tbody id="tabla-faltantes"></tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
-</div>
-</div>
 
-<!-- vista con el historial de todos los conteos guardados -->
-<div id="vista-historial" class="vista oculto">
-    <h2>Historial de Conteos</h2>
+    <!-- vista: historial de todos los conteos guardados -->
+    <div id="vista-historial" class="vista oculto">
+        <h2>Historial de Conteos</h2>
 
-    <div class="auditoria-tabla-wrap">
-        <table class="tabla-inventario">
-            <thead>
-                <tr><th>Fecha</th><th>Resultado</th><th>Acciones</th></tr>
-            </thead>
-            <tbody id="tabla-historial"></tbody>
-        </table>
+        <div class="auditoria-tabla-wrap">
+            <table class="tabla-inventario">
+                <thead>
+                    <tr><th>Fecha</th><th>Resultado</th><th>Acciones</th></tr>
+                </thead>
+                <tbody id="tabla-historial"></tbody>
+            </table>
+        </div>
     </div>
-</div>
 
     <!-- modal con el formulario de agregar/editar producto -->
     <div id="modal-form" class="modal oculto">
@@ -159,12 +158,12 @@
                 <input type="hidden" id="itemId">
 
                 <div class="campo">
-                    <label>Codigo:</label>
+                    <label>Código:</label>
                     <input type="text" id="codigoInventario" required>
                 </div>
 
                 <div class="campo">
-                    <label>Categoria:</label>
+                    <label>Categoría:</label>
                     <select id="idCategoria" required></select>
                 </div>
 
@@ -184,7 +183,7 @@
                 </div>
 
                 <div class="campo">
-                    <label>Descripcion:</label>
+                    <label>Descripción:</label>
                     <input type="text" id="descripcion">
                 </div>
 
@@ -192,7 +191,6 @@
                     <label>Precio unitario:</label>
                     <input type="number" min="0" id="precioUnitario" step="0.01" required>
                 </div>
-
 
                 <div class="campo">
                     <label>Fecha de compra:</label>
@@ -231,25 +229,25 @@
             <form id="form-unidad">
                 <input type="hidden" id="unidadProductoId">
                 <div class="campo">
-                    <label>Codigo de unidad (ej: numero de serie):</label>
+                    <label>Código de unidad (ej: número de serie):</label>
                     <input type="text" id="codigoUnidad" required>
                 </div>
                 <button type="submit" class="btn-guardar">+ Agregar unidad</button>
             </form>
 
- <div class="unidades-tabla">
-    <table class="tabla-inventario">
-        <thead>
-            <tr>
-                <th>Codigo</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-unidades"></tbody>
-    </table>
-</div>
-    </div>
+            <div class="unidades-tabla">
+                <table class="tabla-inventario">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-unidades"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- modal para crear una categoria nueva -->
@@ -268,10 +266,10 @@
         </div>
     </div>
 
-    <!-- modal de confirmacion, reemplaza el confirm  nativo del navegador -->
+    <!-- modal de confirmacion, reemplaza el confirm nativo del navegador -->
     <div id="modal-confirmacion" class="modal oculto">
         <div class="modal-contenido modal-confirmacion-contenido">
-            <p id="confirmacion-mensaje">¿seguro?</p>
+            <p id="confirmacion-mensaje">¿Seguro?</p>
             <div class="confirmacion-botones">
                 <button id="confirmacion-cancelar" class="btn-cancelar">Cancelar</button>
                 <button id="confirmacion-aceptar" class="btn-eliminar">Eliminar</button>
@@ -279,23 +277,22 @@
         </div>
     </div>
 
-    <!-- modal de mensaje, para finalizar el inventario-->
+    <!-- modal de resumen, para finalizar el inventario -->
+    <div id="modal-resumen" class="modal oculto">
+        <div class="modal-contenido">
+            <button class="modal-cerrar" onclick="cerrarResumen()">&times;</button>
+            <h3>Resumen del Inventario</h3>
 
-<div id="modal-resumen" class="modal oculto">
-    <div class="modal-contenido">
-        <button class="modal-cerrar" onclick="cerrarResumen()">&times;</button>
-        <h3>Resumen del Inventario</h3>
+            <p id="resumen-texto" class="contador-texto"></p>
 
-        <p id="resumen-texto" class="contador-texto"></p>
+            <div id="resumen-faltantes-contenedor">
+                <h4>Productos faltantes:</h4>
+                <ul id="resumen-lista-faltantes"></ul>
+            </div>
 
-        <div id="resumen-faltantes-contenedor">
-            <h4>Productos faltantes:</h4>
-            <ul id="resumen-lista-faltantes"></ul>
+            <button class="btn-guardar" onclick="cerrarResumen()">Aceptar</button>
         </div>
-
-        <button class="btn-guardar" onclick="cerrarResumen()">Aceptar</button>
     </div>
-</div>
 
     <!-- modal con el detalle completo de un conteo del historial -->
     <div id="modal-historial-detalle" class="modal oculto">
@@ -316,4 +313,4 @@
 
     <script src="js/app.js"></script>
 </body>
-</html> 
+</html>
