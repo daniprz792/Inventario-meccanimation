@@ -235,15 +235,21 @@ async function eliminarItem(id) {
 }
 
 // ver imagen 
+// ver imagen (si el producto no tiene foto, o el archivo no existe, muestra la imagen por defecto)
+const IMAGEN_POR_DEFECTO = '/css/img/sin-imagen.svg';
+
 function verDetalle(item) {
     const img = document.getElementById('detalle-imagen');
-    if (item.foto) {
-        img.src = '/images/' + item.foto;
-        img.style.display = 'block';
-    } else {
-        img.removeAttribute('src');
-        img.style.display = 'none';
-    }
+
+    // si la foto falla al cargar (archivo borrado, ruta mala), cae a la imagen por defecto
+    img.onerror = () => {
+        img.onerror = null; // evita un bucle si la imagen por defecto tambien fallara
+        img.src = IMAGEN_POR_DEFECTO;
+    };
+
+    img.src = item.foto ? '/images/' + item.foto : IMAGEN_POR_DEFECTO;
+    img.alt = item.foto ? 'Imagen del producto' : 'Sin imagen';
+    img.style.display = 'block';
 
     document.getElementById('modal-detalle').classList.remove('oculto');
 }
@@ -565,7 +571,7 @@ async function cargarUltimoConteo() {
             <td>${escapar(fechaConteo)}</td>
             <td>${escapar(item.codigoInventario ?? item.codigo)}</td>
             <td>${escapar(item.nombre)}</td>
-            <td>${estado}</td>
+            <td class="estado-inventario-${estado === 'Escaneado' ? 'escaneado' : 'faltante'}">${estado}</td>
         </tr>
     `).join('');
 }
@@ -659,7 +665,9 @@ function verDetalleConteo(conteo) {
             const fila = tbody.insertRow();
             fila.insertCell().textContent = item.codigoInventario ?? item.codigo ?? '';
             fila.insertCell().textContent = item.nombre || '';
-            fila.insertCell().textContent = estado;
+            const celdaEstado = fila.insertCell();
+            celdaEstado.textContent = estado;
+            celdaEstado.className = `estado-inventario-${estado === 'Escaneado' ? 'escaneado' : 'faltante'}`;
         });
 
     document.getElementById('modal-historial-detalle').classList.remove('oculto');
