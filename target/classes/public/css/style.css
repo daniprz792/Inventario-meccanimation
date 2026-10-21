@@ -145,13 +145,24 @@ h2 {
     margin-bottom: 0.5rem;
 }
 
-/* logo */
-.seccion-logo {
-    margin: 0 0 1rem;
+/* logo + titulo en una sola fila */
+.cabecera-marca {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.6rem;
+    padding-top: 3rem;
+    margin-bottom: 0.5rem;
 }
-.seccion-logo img {
-    width: 8rem;
-    height: auto;
+.cabecera .cabecera-marca h1 {
+    padding-top: 0; /* el espacio de arriba ahora lo pone el contenedor */
+    margin: 0;
+}
+.cabecera-logo {
+    width: 6.4rem;
+    height: 6.4rem;
+    flex-shrink: 0;
 }
 
 /* menu de navegacion (SPA) */
@@ -195,7 +206,7 @@ h2 {
     margin-top: 3rem;
 }
 .menu-opciones .nav-btn {
-    font-size: 1.8rem;
+    font-size: 2rem;
     padding: 2rem 3rem;
 }
 
@@ -383,9 +394,10 @@ h2 {
 .tabla-inventario th,
 .tabla-inventario td {
     padding: 1.2rem 1.5rem;
-    text-align: left;
+    text-align: center;
 }
 .tabla-inventario th {
+    text-align: center;
     background-color: var(--naranja);
     color: var(--blanco);
     font-size: 1.4rem;
@@ -430,7 +442,7 @@ h2 {
     background: var(--blanco);
 }
 .estado-disponible {
-    background: #2ecc71; /* verde */
+    background: #2ecc71; /* verdee */
 }
 .estado-asignado {
     background: var(--naranja);
@@ -439,7 +451,7 @@ h2 {
     background: var(--rojo);
 }
 .estado-baja {
-    background: #555b70; /* gris azulado, apagado a proposito */
+    background: #555b70; /* gris medio azulado, apagado a proposito obvio*/
 }
 
 /* modal del detalle */
@@ -457,7 +469,7 @@ h2 {
     display: none;
 }
 .modal-contenido {
-    background: var(--azul-claro);
+    background: var(--azul-oscuro);
     border-radius: 1rem;
     padding: 2.5rem;
     max-width: 500px;
@@ -537,7 +549,7 @@ h2 {
 /* modal: resumen de auditoria */
 #resumen-faltantes-contenedor h4 {
     color: var(--blanco);
-    margin-bottom: 0.8rem;
+    margin-bottom: 1rem;
 }
 #resumen-lista-faltantes {
     max-height: 20rem;
@@ -691,6 +703,126 @@ h2 {
     display: none;
 }
 
+.seccion-tabla {
+    overflow-x: auto;
+}
+#vista-inventario .tabla-inventario {
+    min-width: 120rem;
+}
+#vista-inventario .tabla-inventario th {
+    overflow-wrap: anywhere; /* si una palabra no cabe, se parte en vez de pisar la columna vecina */
+}
+
+
+#modal-form .modal-contenido {
+    max-width: 64rem;
+}
+#form-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem 1.8rem;
+}
+#form-item .campo input,
+#form-item .campo select {
+    width: 100%;
+    min-width: 0;
+}
+/* observaciones, imagen y el boton ocupan toda la fila */
+#form-item .campo:nth-of-type(9),
+#form-item .campo:nth-of-type(10),
+#form-item .btn-guardar {
+    grid-column: 1 / -1;
+}
+/* ===== campos de formulario ===== */
+.campo label {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.02rem;
+}
+
+/* asterisco naranja en los campos obligatorios */
+.campo:has(:required) label::after {
+    content: " *";
+    color: var(--naranja);
+}
+
+.campo input,
+.campo select {
+    font-family: var(--fuente-principal);
+    font-size: 1.4rem;
+    padding: 1rem 1.2rem;
+    color: var(--blanco);
+    background-color: var(--azul-claro);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 1rem;
+    outline: none;
+    color-scheme: dark;            /* calendario y lista desplegable en oscuro */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.campo input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+.campo input:hover,
+.campo select:hover {
+    border-color: rgba(253, 114, 29, 0.55);
+}
+.campo input:focus,
+.campo select:focus {
+    border-color: var(--naranja);
+    box-shadow: 0 0 0 0.3rem rgba(253, 114, 29, 0.22);
+}
+
+/* campo obligatorio vacio o invalido, solo despues de interactuar con el */
+.campo input:user-invalid,
+.campo select:user-invalid {
+    border-color: var(--rojo);
+}
+
+/* selector con flecha naranja propia */
+.campo select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 3.6rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23FD721D' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.2rem center;
+    cursor: pointer;
+}
+.campo select option {
+    background: var(--azul-oscuro);
+    color: var(--blanco);
+}
+
+/* boton "Seleccionar archivo" con el estilo de la app */
+.campo input[type="file"] {
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+}
+.campo input[type="file"]::file-selector-button {
+    font-family: var(--fuente-principal);
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--blanco);
+    background: var(--naranja);
+    border: none;
+    border-radius: 2rem;
+    padding: 0.6rem 1.4rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.campo input[type="file"]::file-selector-button:hover {
+    background: var(--naranja-hover);
+}
+
+/* el autocompletado de Chrome no debe pintar los campos de amarillo */
+.campo input:-webkit-autofill {
+    -webkit-text-fill-color: var(--blanco);
+    box-shadow: 0 0 0 100rem var(--azul-claro) inset;
+}
+
+
 /* responsive tablets */
 @media (max-width: 768px) {
 
@@ -700,16 +832,14 @@ h2 {
 
     .cabecera h1 {
         font-size: 3.2rem;
-        padding-top: 2rem;
     }
 
     h2 {
         font-size: 2.4rem;
     }
 
-    .seccion-logo img {
-        max-width: 8rem;
-    }
+     .cabecera-marca { padding-top: 2rem; }
+      .cabecera-logo { width: 5rem; height: 5rem; }
 
     /* conserva la tabla y permite recorrer sus columnas en pantallas estrechas */
     .seccion-tabla {
@@ -733,6 +863,8 @@ h2 {
         overflow-wrap: anywhere;
         vertical-align: top;
     }
+
+     #form-item { grid-template-columns: 1fr; }
 
     /* el formulario de producto pasa de fila a columna */
     .seccion-formulario form,
@@ -765,6 +897,9 @@ h2 {
     .cabecera h1 {
         font-size: 2.4rem;
     }
+
+          .cabecera-marca { padding-top: 6rem; gap: 1rem; } /* evita chocar con Menú y Salir */
+      .cabecera-logo { width: 4rem; height: 4rem; }
 
     .btn-guardar {
         width: 100%;

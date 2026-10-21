@@ -7,15 +7,18 @@
     <title>Inventario Meccanimation</title>
     <link rel="icon" type="image/png" href="css/img/favicon.png">
 
-    <!-- normalize primero, para que style.css pueda sobrescribirlo -->
+    <!-- normalize primero, pa q style.css pueda sobrescribirlo -->
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <header class="cabecera">
-        <h1>Inventario de Activos</h1>
+       <header class="cabecera">
+        <div class="cabecera-marca">
+            <img src="css/img/favicon.png" alt="Logo" class="cabecera-logo">
+            <h1>Inventario de Activos</h1>
+        </div>
         <div class="usuario-info">
             <span id="usuario-saludo"></span>
             <button id="btn-logout" class="btn-volver btn-logout">Salir</button>
@@ -24,10 +27,8 @@
 
     <!-- menu de inicio -->
     <div id="vista-menu" class="vista">
-        <div class="seccion-logo">
-            <img src="css/img/favicon.png" alt="logo">
-        </div>
-        <h2>¿Qué vamos a hacer?</h2>
+
+        <h2>¿Que vamos a hacer?</h2>
         <div class="menu-opciones">
             <button class="nav-btn" onclick="cambiarVista('vista-inventario')">Ver Inventario</button>
             <button class="nav-btn" onclick="cambiarVista('vista-auditoria')">Hacer Inventario</button>

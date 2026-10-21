@@ -1,8 +1,11 @@
 package inventario.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +14,7 @@ import inventario.model.Item;
 
 public class ItemDAO {
 
-    public void guardarItem(Item item) {
+    public void guardarItem(Item item) throws SQLException {
         String sql = """
             INSERT INTO producto
             (codigo_inventario, id_categoria, nombre, marca, modelo,
@@ -20,9 +23,8 @@ public class ItemDAO {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
-        try {
-            Connection conexion = ConexionDB.conectar();
-            PreparedStatement stmt = conexion.prepareStatement(sql);
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, item.getCodigoInventario());
             stmt.setInt(2, item.getIdCategoria());
             stmt.setString(3, item.getNombre());
@@ -33,12 +35,14 @@ public class ItemDAO {
             stmt.setString(8, item.getFoto());
             stmt.setString(9, item.getNotas());
             stmt.setInt(10, 1); // un producto nuevo siempre nace activo
-            stmt.setString(11, item.getFechaCompra());
-            stmt.executeUpdate();
-            System.out.println("Producto guardado correctamente");
-            conexion.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            if (item.getFechaCompra() == null || item.getFechaCompra().isBlank()) {
+                stmt.setNull(11, Types.DATE);
+            } else {
+                stmt.setDate(11, Date.valueOf(item.getFechaCompra()));
+            }
+            if (stmt.executeUpdate() != 1) {
+                throw new SQLException("La inserción no agregó ningún producto");
+            }
         }
     }
 

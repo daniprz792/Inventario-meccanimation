@@ -12,8 +12,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ItemRoutes {
+    private static final Logger LOGGER = Logger.getLogger(ItemRoutes.class.getName());
 
     public static void registrar(Javalin app) {
         ItemDAO dao = new ItemDAO();
@@ -29,9 +33,16 @@ public class ItemRoutes {
         });
 
         app.post("/api/items", ctx -> {
-            Item item = construirItemDesdeFormulario(ctx, dao, null);
-            dao.guardarItem(item);
-            ctx.status(201);
+            try {
+                Item item = construirItemDesdeFormulario(ctx, dao, null);
+                dao.guardarItem(item);
+                ctx.status(201);
+            } catch (IllegalArgumentException e) {
+                ctx.status(400).result("Los datos numéricos o la fecha del producto no son válidos");
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "No se pudo guardar el producto", e);
+                ctx.status(500).result("No se pudo guardar el producto. Verifica los datos y la conexión a la base de datos.");
+            }
         });
 
         app.put("/api/items/{id}", ctx -> {
@@ -58,7 +69,8 @@ public class ItemRoutes {
         item.setModelo(ctx.formParam("modelo"));
         item.setDescripcion(ctx.formParam("descripcion"));
         item.setPrecioUnitario(Double.parseDouble(ctx.formParam("precioUnitario")));
-        item.setFechaCompra(ctx.formParam("fechaCompra"));
+        String fechaCompra = ctx.formParam("fechaCompra");
+        item.setFechaCompra(fechaCompra == null || fechaCompra.isBlank() ? null : fechaCompra);
         item.setNotas(ctx.formParam("notas"));
 
         Item itemActual = null;
