@@ -11,6 +11,8 @@
     --fuente-principal: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --rojo: #E74C3C;
     --rojo-hover: #C0392B;
+    --verde:#2ecc71;
+    --gris-azulao:#555b70;
 }
 
 /* base y reset */
@@ -74,7 +76,7 @@ h2 {
 }
 
 .login-campos {
-    background: rgba(18, 23, 42, 0.9);
+    background: var(--azul-oscuro);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 2.2rem;
     box-shadow: 0 2rem 4rem rgba(0,0,0,0.32);
@@ -100,7 +102,7 @@ h2 {
 .login-campo label {
     display: block;
     font-size: 1.4rem;
-    color: rgba(255,255,255,0.84);
+    color: rgba(255, 255, 255, 0.87); /*mas clarito*/
     margin-bottom: 0.8rem;
 }
 
@@ -110,7 +112,7 @@ h2 {
     padding: 1.2rem 1.4rem;
     border-radius: 1.2rem;
     border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.95);
+    background: var(--blanco);
     color: var(--negro);
     font-size: 1.5rem;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
@@ -119,7 +121,6 @@ h2 {
 .login-campo input:focus {
     outline: none;
     border-color: rgba(253, 114, 29, 0.8);
-    box-shadow: 0 0 0 0.35rem rgba(253, 114, 29, 0.18);
 }
 
 .login-btn {
@@ -134,7 +135,7 @@ h2 {
 .login-error {
     min-height: 2.2rem;
     margin: 1.6rem 0 0;
-    color: #ff9a9a;
+    color: var(--rojo-hover);
     font-weight: 600;
 }
 
@@ -279,7 +280,7 @@ h2 {
     font-family: var(--fuente-principal);
     font-size: 1.4rem;
     font-weight: bold;
-    padding: 0.9rem 1.8rem;
+    padding: 1rem 2rem;
     border: none;
     cursor: pointer;
     background: var(--naranja);
@@ -442,7 +443,7 @@ h2 {
     background: var(--blanco);
 }
 .estado-disponible {
-    background: #2ecc71; /* verdee */
+    background: var(--verde); /* verdee */
 }
 .estado-asignado {
     background: var(--naranja);
@@ -451,7 +452,7 @@ h2 {
     background: var(--rojo);
 }
 .estado-baja {
-    background: #555b70; /* gris medio azulado, apagado a proposito obvio*/
+    background: var(--gris-azulao); /* gris medio azulado, apagado a proposito obvio*/
 }
 
 /* modal del detalle */
@@ -459,7 +460,7 @@ h2 {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: var(--azul-oscuro);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -469,7 +470,7 @@ h2 {
     display: none;
 }
 .modal-contenido {
-    background: var(--azul-oscuro);
+    background: var(--azul-claro);
     border-radius: 1rem;
     padding: 2.5rem;
     max-width: 500px;
@@ -891,7 +892,7 @@ h2 {
 
 }
 
-/* responsive celulares */
+/* responsive cel */
 @media (max-width: 480px) {
 
     .cabecera h1 {
@@ -925,7 +926,7 @@ h2 {
         width: 95%;
         padding: 1.5rem;
         max-height: 85vh;
-        overflow-y: auto; /* por si el formulario es mas alto que la pantalla */
+        overflow-y: auto; /* por si el formulario es mucho mas alto que la pantalla */
     }
 
     .modal-contenido img {

@@ -247,7 +247,7 @@ function verDetalle(item) {
         img.src = IMAGEN_POR_DEFECTO;
     };
 
-    img.src = item.foto ? '/images/' + item.foto : IMAGEN_POR_DEFECTO;
+    img.src = item.foto ? '/images/' + encodeURIComponent(item.foto) : IMAGEN_POR_DEFECTO;
     img.alt = item.foto ? 'Imagen del producto' : 'Sin imagen';
     img.style.display = 'block';
 

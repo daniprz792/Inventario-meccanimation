@@ -1,7 +1,9 @@
 package inventario.routes;
 
 import io.javalin.Javalin;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
 import io.javalin.http.UploadedFile;
 import inventario.dao.ItemDAO;
 import inventario.model.Item;
@@ -13,14 +15,34 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ItemRoutes {
     private static final Logger LOGGER = Logger.getLogger(ItemRoutes.class.getName());
+    private static final Path DIRECTORIO_IMAGENES = Paths.get("uploads", "images").toAbsolutePath().normalize();
+
+    // solo se aceptan estos formatos de imagen, y con un tamaño maximo
+    private static final Set<String> EXTENSIONES_PERMITIDAS = Set.of("jpg", "jpeg", "png", "gif", "webp");
+    private static final long TAMANO_MAXIMO_BYTES = 8L * 1024 * 1024; // 8 MB
 
     public static void registrar(Javalin app) {
         ItemDAO dao = new ItemDAO();
+
+        // sirve las imagenes guardadas (tambien las antiguas, con espacios en el nombre)
+        app.get("/images/{filename}", ctx -> {
+            Path imagen = DIRECTORIO_IMAGENES.resolve(ctx.pathParam("filename")).normalize();
+            if (!DIRECTORIO_IMAGENES.equals(imagen.getParent()) || !Files.isRegularFile(imagen)) {
+                throw new NotFoundResponse("Imagen no encontrada");
+            }
+
+            String contentType = Files.probeContentType(imagen);
+            ctx.contentType(contentType != null ? contentType : "application/octet-stream");
+            ctx.result(Files.newInputStream(imagen));
+        });
 
         app.get("/api/items", ctx -> {
             String categoriaParam = ctx.queryParam("categoria");
@@ -46,11 +68,15 @@ public class ItemRoutes {
         });
 
         app.put("/api/items/{id}", ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            Item item = construirItemDesdeFormulario(ctx, dao, id);
-            item.setId(id);
-            dao.actualizarItem(item);
-            ctx.status(204);
+            try {
+                int id = Integer.parseInt(ctx.pathParam("id"));
+                Item item = construirItemDesdeFormulario(ctx, dao, id);
+                item.setId(id);
+                dao.actualizarItem(item);
+                ctx.status(204);
+            } catch (IllegalArgumentException e) {
+                ctx.status(400).result("Los datos numéricos o la fecha del producto no son válidos");
+            }
         });
 
         app.delete("/api/items/{id}", ctx -> {
@@ -80,10 +106,19 @@ public class ItemRoutes {
 
         UploadedFile archivo = ctx.uploadedFile("imagen");
 
-        if (archivo != null) {
+        if (archivo != null && archivo.size() > 0) {
+            String extension = extensionDe(archivo.filename());
+            if (!EXTENSIONES_PERMITIDAS.contains(extension)) {
+                throw new BadRequestResponse("Formato de imagen no permitido. Usa JPG, PNG, GIF o WEBP.");
+            }
+            if (archivo.size() > TAMANO_MAXIMO_BYTES) {
+                throw new BadRequestResponse("La imagen supera el tamaño máximo de 8 MB.");
+            }
+
             try (InputStream contenido = archivo.content()) {
-                String nombreArchivo = System.currentTimeMillis() + "_" + archivo.filename();
-                Path destino = Paths.get("uploads/images", nombreArchivo);
+                // nombre propio, sin espacios ni caracteres raros, y que nunca se repite
+                String nombreArchivo = UUID.randomUUID() + "." + extension;
+                Path destino = DIRECTORIO_IMAGENES.resolve(nombreArchivo);
                 Files.createDirectories(destino.getParent());
                 Files.copy(contenido, destino, StandardCopyOption.REPLACE_EXISTING);
                 item.setFoto(nombreArchivo);
@@ -91,11 +126,19 @@ public class ItemRoutes {
                 throw new RuntimeException("Error guardando la imagen del producto", e);
             }
         } else if (itemActual != null) {
+            // al editar sin elegir una foto nueva, se conserva la que ya tenia
             item.setFoto(itemActual.getFoto());
         }
 
         item.setActive(itemActual != null ? itemActual.getActive() : 1);
 
         return item;
+    }
+
+    // devuelve la extension en minuscula y sin punto ("Foto 1.JPG" -> "jpg"), o "" si no tiene
+    private static String extensionDe(String nombre) {
+        if (nombre == null) return "";
+        int punto = nombre.lastIndexOf('.');
+        return punto < 0 ? "" : nombre.substring(punto + 1).toLowerCase(Locale.ROOT);
     }
 }
