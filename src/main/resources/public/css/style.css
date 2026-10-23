@@ -460,7 +460,7 @@ h2 {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: var(--azul-oscuro);
+    background: #1E3A5F;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -470,7 +470,7 @@ h2 {
     display: none;
 }
 .modal-contenido {
-    background: var(--azul-claro);
+    background: var(--azul-oscuro);
     border-radius: 1rem;
     padding: 2.5rem;
     max-width: 500px;
@@ -899,8 +899,8 @@ h2 {
         font-size: 2.4rem;
     }
 
-          .cabecera-marca { padding-top: 6rem; gap: 1rem; } /* evita chocar con Menú y Salir */
-      .cabecera-logo { width: 4rem; height: 4rem; }
+    .cabecera-marca { padding-top: 6rem; gap: 1rem; } /* evita chocar con Menú y Salir */
+    .cabecera-logo { width: 4rem; height: 4rem; }
 
     .btn-guardar {
         width: 100%;
